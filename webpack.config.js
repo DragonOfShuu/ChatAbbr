@@ -1,99 +1,59 @@
-const path = require("path")
-const webpack = require("webpack")
-const HtmlWebpackPlugin = require("html-webpack-plugin")
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-const CopyWebpackPlugin = require("copy-webpack-plugin")
+const path = require("path");
+const HTMLPlugin = require("html-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin")
+
 module.exports = {
-  mode: "development",
-  entry: {
-    app: "./src/index.js",
-  },
-  output: {
-    // We want to create the JavaScript bundles under a
-    // 'static' directory
-    filename: "static/[name].[hash].js",
-    // Absolute path to the desired output directory. In our
-    // case a directory named 'dist'
-    // '__dirname' is a Node variable that gives us the absolute
-    // path to our current directory. Then with 'path.resolve' we
-    // join directories
-    // Webpack 4 assumes your output path will be './dist' so you
-    // can just leave this
-    // entry out.
-    path: path.resolve(__dirname, "dist"),
-    publicPath: "/",
-  },
-  // Change to production source maps
-  devtool: "source-map",
-  module: {
-    rules: [
-      {
-        test: /\.(js)$/,
-        exclude: /node_modules/,
-        use: ["babel-loader"],
-      },
-      {
-        test: /\.css$/,
-        use: [
-          {
-            // We configure 'MiniCssExtractPlugin'
-            loader: MiniCssExtractPlugin.loader,
-          },
-          {
-            loader: "css-loader",
-            options: {
-              modules: {
-                exportLocalsConvention: "camelCaseOnly",
-                namedExport: true,
-              },
-              sourceMap: true,
-              importLoaders: 1,
-            },
-          },
-          {
-            // PostCSS will run before css-loader and will
-            // minify and autoprefix our CSS rules.
-            loader: "postcss-loader",
-          },
-        ],
-      },
-    ],
-  },
-  optimization: {
-    splitChunks: {
-      cacheGroups: {
-        styles: {
-          name: "styles",
-          test: /\.css$/,
-          chunks: "all",
-          enforce: true,
-        },
-        vendor: {
-          chunks: "initial",
-          test: "vendor",
-          name: "vendor",
-          enforce: true,
-        },
-      },
+    entry: {
+        index: "./src/index.tsx"
     },
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: "public/index.html",
-      favicon: "public/favicon.ico",
-    }),
+    mode: "production",
+    module: {
+        rules: [
+            {
+              test: /\.tsx?$/,
+               use: [
+                 {
+                  loader: "ts-loader",
+                   options: {
+                     compilerOptions: { noEmit: false },
+                    }
+                  }],
+               exclude: /node_modules/,
+            },
+            {
+              exclude: /node_modules/,
+              test: /\.css$/i,
+               use: [
+                  "style-loader",
+                  "css-loader"
+               ]
+            },
+        ],
+    },
+    plugins: [
+        new CopyPlugin({
+            patterns: [
+                { from: "manifest.json", to: "../manifest.json" },
+            ],
+        }),
+        ...getHtmlPlugins(["index"]),
+    ],
+    resolve: {
+        extensions: [".tsx", ".ts", ".js"],
+    },
+    output: {
+        path: path.join(__dirname, "dist/js"),
+        filename: "[name].js",
+    },
+};
 
-    // Create the stylesheet under 'styles' directory
-    new MiniCssExtractPlugin({
-      filename: "styles/styles.[hash].css",
-    }),
-
-    new CopyWebpackPlugin({
-      patterns: [
-        { from: "./public/manifest.json", to: "manifest.json" },
-        { from: "./public/content.js", to: "content.js" },
-        { from: "./public/icons", to: "icons" },
-      ],
-    }),
-  ],
+function getHtmlPlugins(chunks) {
+    return chunks.map(
+        (chunk) =>
+            new HTMLPlugin({
+                title: "React extension",
+                filename: `${chunk}.html`,
+                chunks: [chunk],
+            })
+    );
 }
