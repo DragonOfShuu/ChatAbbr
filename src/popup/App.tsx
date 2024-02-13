@@ -1,10 +1,10 @@
 import './App.sass';
-// import Markdown from 'react-markdown';
+import Markdown from 'react-markdown';
 
 function App() {
   return (
     <div className="App">
-      {/* <Markdown> */}
+      <Markdown>
         {`
           Hello World
 
@@ -39,7 +39,7 @@ function App() {
 
           Hello worldddddddd
         `}
-      {/* </Markdown> */}
+      </Markdown>
     </div>
   );
 }
