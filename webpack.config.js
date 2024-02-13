@@ -4,7 +4,8 @@ const CopyPlugin = require("copy-webpack-plugin")
 
 module.exports = {
     entry: {
-        index: "./src/index.tsx",
+        popup: "./src/popup/index.tsx",
+        pages: "./src/pages/index.tsx",
     },
     mode: "production",
     module: {
@@ -25,9 +26,20 @@ module.exports = {
               test: /\.css$/i,
                use: [
                   "style-loader",
-                  "css-loader"
+                  "css-loader",
+                  'postcss-loader',
                ]
             },
+            {
+                exclude: /node_modules/,
+                test: /\.s[ac]ss$/i,
+                use: [
+                    "style-loader",
+                    "css-loader",
+                    'postcss-loader',
+                    "sass-loader",
+                ]
+            }
         ],
     },
     plugins: [
@@ -36,7 +48,7 @@ module.exports = {
                 { from: "manifest.json", to: "../manifest.json" },
             ],
         }),
-        ...getHtmlPlugins(["index"]),
+        ...getHtmlPlugins(["popup", "pages"]),
     ],
     resolve: {
         extensions: [".tsx", ".ts", ".js"],
@@ -51,7 +63,7 @@ function getHtmlPlugins(chunks) {
     return chunks.map(
         (chunk) =>
             new HTMLPlugin({
-                title: "React extension",
+                title: "ChatAbbr",
                 filename: `${chunk}.html`,
                 chunks: [chunk],
             })
