@@ -6,5 +6,13 @@
     "action": {
         "default_popup": "js/popup.html",
         "default_title": "ChatAbbr"
-    }
+    },
+    "content_scripts": [
+        {
+          "js": ["js/content.js"],
+          "matches": [
+            "*://*/*"
+          ]
+        }
+    ]
 }

@@ -6,6 +6,7 @@ module.exports = {
     entry: {
         popup: "./src/popup/index.tsx",
         pages: "./src/pages/index.tsx",
+        content: "./src/injection/index.ts"
     },
     mode: "production",
     module: {
