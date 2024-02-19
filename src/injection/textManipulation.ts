@@ -1,33 +1,34 @@
-function insertTextAtContentDiv(element: HTMLDivElement, text: string) {
+function insertTextAtContentDiv(element: HTMLDivElement, text: string, deleteCount?: number|null) {
     let sel = window.getSelection();
     if (!sel) {
         console.log("Selection was null...")
         return
     }
     console.log(sel.focusNode)
-    if (sel.getRangeAt && sel.rangeCount) {
-        let range = sel.getRangeAt(0);
-        range.deleteContents();
 
-        // Range.createContextualFragment() would be useful here but is
-        // non-standard and not supported in all browsers (IE9, for one)
-        var el = document.createElement("div");
-        el.innerHTML = text;
-        var frag = document.createDocumentFragment(), node, lastNode;
-        while ( (node = el.firstChild) ) {
-            lastNode = frag.appendChild(node);
-        }
-        range.insertNode(frag);
-        
-        // Preserve the selection
-        if (lastNode) {
-            range = range.cloneRange();
-            range.setStartAfter(lastNode);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
-        }
+    let range = sel.getRangeAt(0);
+    if (deleteCount&&sel.focusNode&&sel.focusNode.textContent)
+        range.setStart(sel.focusNode, sel.focusNode.textContent?.length-deleteCount)
+    range.deleteContents();
+
+    // Range.createContextualFragment() would be useful here but is
+    // non-standard and not supported in all browsers (IE9, for one)
+    var el = document.createElement("div");
+    el.innerHTML = text;
+    var frag = document.createDocumentFragment(), node, lastNode;
+    while ( (node = el.firstChild) ) {
+        lastNode = frag.appendChild(node);
     }
+    range.insertNode(frag);
+    
+    if (!lastNode) return
+    
+    // Preserve the selection
+    range = range.cloneRange();
+    range.setStartAfter(lastNode);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
 }
 
 function insertTextInInput(element: HTMLInputElement|HTMLTextAreaElement, text: string, deleteCount?: number|null) {
@@ -48,7 +49,7 @@ function insertTextInInput(element: HTMLInputElement|HTMLTextAreaElement, text: 
 }
 
 function insertText(element: HTMLInputElement|HTMLTextAreaElement|HTMLDivElement, text: string, deleteCount?: number|null) {
-    if (element instanceof HTMLDivElement) insertTextAtContentDiv(element, text)
+    if (element instanceof HTMLDivElement) insertTextAtContentDiv(element, text, deleteCount)
     else insertTextInInput(element, text, deleteCount)
 }
 
