@@ -24,6 +24,6 @@
   },
   "include": [
     "src",
-    "images.d.ts"
+    "declarations.d.ts"
   ]
 }

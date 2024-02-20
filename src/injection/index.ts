@@ -1,5 +1,5 @@
 /* global chrome */
-import './funnyStyles.sass'
+import styles from './funnyStyles.module.sass'
 import { charAllowed } from './injectionGlobals';
 import insertText from './textManipulation';
 
@@ -67,6 +67,7 @@ const listenActiveElement = (callback: any) => {
 };
 
 const keyUp = (e: KeyboardEvent) => {
+    if (!e.isTrusted) return
     console.log(`Key up detected. Key: ${e.key}`)
     const target = e.target as HTMLInputElement|HTMLTextAreaElement|HTMLDivElement;
 
@@ -85,9 +86,8 @@ const keyUp = (e: KeyboardEvent) => {
     console.log('Currently typed: ', currentlyTyped)
 
     if (currentlyTyped.endsWith("-thx")) {
-        console.log('Dispatching backspace event...')
-        // target.dispatchEvent( new KeyboardEvent('keydown', { key: 'Backspace' }) )
         insertText(target, 'Thank you for using this extension!', 4)
+        target.classList.add(styles.rainbow)
         currentlyTyped = ''
     }
 }
