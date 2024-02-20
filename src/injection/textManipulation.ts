@@ -1,10 +1,28 @@
-function insertTextAtContentDiv(element: HTMLDivElement, text: string, deleteCount?: number|null) {
+
+function replicateKeyPresses(element: HTMLElement, text: string, deleteCount?: number) {
+    const keyPress = (key: string) => ["keydown", "keyup"].forEach((eventType) => {
+        element.dispatchEvent( new KeyboardEvent(eventType, { key: key }) )
+    })
+
+    if (deleteCount) 
+        for (let i = 0; i<deleteCount; i++) keyPress('Backspace')
+
+    for (let i = 0; i<text.length; i++)
+        keyPress( text[i] )
+}
+
+function insertTextAtContentDiv(element: HTMLDivElement, text: string, deleteCount?: number) {
     let sel = window.getSelection();
     if (!sel) {
         console.log("Selection was null...")
         return
     }
-    console.log(sel.focusNode)
+    console.log(sel.focusNode);
+
+    if (sel.rangeCount===0) {
+        replicateKeyPresses(element, text, deleteCount);
+        return;
+    } 
 
     let range = sel.getRangeAt(0);
     if (deleteCount&&sel.focusNode&&sel.focusNode.textContent)
@@ -20,7 +38,8 @@ function insertTextAtContentDiv(element: HTMLDivElement, text: string, deleteCou
         lastNode = frag.appendChild(node);
     }
     range.insertNode(frag);
-    
+    replicateKeyPresses(element, text, deleteCount)
+
     if (!lastNode) return
     
     // Preserve the selection
@@ -31,7 +50,7 @@ function insertTextAtContentDiv(element: HTMLDivElement, text: string, deleteCou
     sel.addRange(range);
 }
 
-function insertTextInInput(element: HTMLInputElement|HTMLTextAreaElement, text: string, deleteCount?: number|null) {
+function insertTextInInput(element: HTMLInputElement|HTMLTextAreaElement, text: string, deleteCount?: number) {
     element.focus();
     const startPos = element.selectionStart;
     const endPos = element.selectionEnd;
@@ -46,12 +65,16 @@ function insertTextInInput(element: HTMLInputElement|HTMLTextAreaElement, text: 
       text +
       element.value.substring(endPos, element.value.length);
     element.selectionStart = element.selectionEnd = startPos + text.length;
+
+    replicateKeyPresses(element, text, deleteCount)
 }
 
-function insertText(element: HTMLInputElement|HTMLTextAreaElement|HTMLDivElement, text: string, deleteCount?: number|null) {
-    if (element instanceof HTMLDivElement) insertTextAtContentDiv(element, text, deleteCount)
-    else insertTextInInput(element, text, deleteCount)
+function insertText(element: HTMLInputElement|HTMLTextAreaElement|HTMLDivElement, text: string, deleteCount?: number) {
+    console.log("Inserting text into: ", element)
+    console.log("the element is typeof: ", typeof element)
+    if (element.tagName === "DIV") insertTextAtContentDiv(element as HTMLDivElement, text, deleteCount)
+    else insertTextInInput(element as HTMLInputElement|HTMLTextAreaElement, text, deleteCount)
 }
 
 export default insertText;
-export {insertTextAtContentDiv, insertTextInInput}
+export {insertTextAtContentDiv, insertTextInInput, replicateKeyPresses}
