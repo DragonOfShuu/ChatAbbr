@@ -1,6 +1,7 @@
-/* global chrome */
+import { AbbrType } from '../database/abbrAPI';
+import findAbbr from './checkForAbbr';
 import styles from './funnyStyles.module.sass'
-import { charAllowed } from './injectionGlobals';
+import { charAllowed, maxHotkeySize } from '../globalCharacterRules';
 import insertText from './textManipulation';
 
 console.log("Script was injected.")
@@ -66,11 +67,25 @@ const listenActiveElement = (callback: any) => {
     window.addEventListener("focus", detectFocus, true);
 };
 
-const keyUp = (e: KeyboardEvent) => {
+const editTextbox = (
+    target: HTMLInputElement|HTMLTextAreaElement|HTMLDivElement, 
+    data: {abbr: AbbrType, hotkey: string}
+) => {
+    insertText(target, data.abbr.output, data.hotkey.length)
+    target.classList.add(styles.rainbow)
+}
+
+const normalizeTypedSize = (typed: string, limit: number) => {
+    let difference = typed.length-limit;
+    return typed.slice(difference>0?difference:0)
+}
+
+const keyUp = async (e: KeyboardEvent) => {
     if (!e.isTrusted) return
     console.log(`Key up detected. Key: ${e.key}`)
     const target = e.target as HTMLInputElement|HTMLTextAreaElement|HTMLDivElement;
 
+    if (e.key.toLowerCase()==="shift") return
     if (e.key.toLowerCase()==="backspace") {
         if (currentlyTyped.length!==0) 
             currentlyTyped = currentlyTyped.slice(0, currentlyTyped.length-1);
@@ -82,14 +97,18 @@ const keyUp = (e: KeyboardEvent) => {
         return
     }
 
+    currentlyTyped = normalizeTypedSize(currentlyTyped, maxHotkeySize) // Slice start of currentlyTyped to fit size requirements
+
     currentlyTyped+=e.key;
     console.log('Currently typed: ', currentlyTyped)
 
-    if (currentlyTyped.endsWith("-thx")) {
-        insertText(target, 'Thank you for using this extension!', 4)
-        target.classList.add(styles.rainbow)
-        currentlyTyped = ''
+    const abbr = await findAbbr(currentlyTyped)
+    if (abbr) {
+        editTextbox(target, abbr)
+        clearCurrentlyTyped()
     }
+
+    if (e.key===" ") clearCurrentlyTyped()
 }
 
 const listenToTyping = (element: HTMLInputElement, previousElement: HTMLInputElement) => {

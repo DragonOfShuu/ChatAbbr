@@ -1,4 +1,8 @@
-export let allowedChars = "abcdefghijklmnopqrstuvwxyz!@#$%^&*-+_=\\/?"
+export let allowedLetters = "abcdefghijklmnopqrstuvwxyz"
+export let allowedSymbols = "!@#$%^&*-+_=\\/?"
+export let allowedChars = allowedLetters + allowedSymbols
+
+export let maxHotkeySize = 15;
 
 export const charAllowed = (char: string): boolean => {
     char = char.toLowerCase()
