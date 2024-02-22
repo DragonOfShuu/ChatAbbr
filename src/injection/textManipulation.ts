@@ -1,11 +1,23 @@
 
 function replicateKeyPresses(element: HTMLElement, text: string, deleteCount?: number) {
-    const keyPress = (key: string) => ["keydown", "keyup"].forEach((eventType) => {
-        element.dispatchEvent( new KeyboardEvent(eventType, { key: key }) )
+    const keyPress = (key: string, charCode?: number) => ["keydown", "keyup"].forEach((eventType) => {
+        element.dispatchEvent( new KeyboardEvent(eventType, {
+            bubbles: true,
+            cancelable: true,
+            charCode: charCode || key.charCodeAt(0),
+            // keyCode: keyCode || key.code,
+            key: key,
+            shiftKey: false,
+            altKey: false,
+            ctrlKey: false,
+            metaKey: false,
+            repeat: false,
+            location: KeyboardEvent.DOM_KEY_LOCATION_STANDARD,
+        }) )
     })
 
     if (deleteCount) 
-        for (let i = 0; i<deleteCount; i++) keyPress('Backspace')
+        for (let i = 0; i<deleteCount; i++) keyPress('Backspace', 8)
 
     for (let i = 0; i<text.length; i++)
         keyPress( text[i] )

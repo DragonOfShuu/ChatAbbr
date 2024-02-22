@@ -7,6 +7,7 @@ import insertText from './textManipulation';
 console.log("Script was injected.")
 
 let currentlyTyped = ''
+let currentKeysDown: {time: number, key: string}[] = []
 const clearCurrentlyTyped = () => currentlyTyped = ''
 
 const isTextareaOrInput = (element: Element | null): null|Element => {
@@ -80,8 +81,24 @@ const normalizeTypedSize = (typed: string, limit: number) => {
     return typed.slice(difference>0?difference:0)
 }
 
+const popCurrentKey = (key: string) => {
+    let keyIndex = currentKeysDown.findIndex((k)=> k.key===key)
+    const keyInfo = currentKeysDown[keyIndex]
+    currentKeysDown.splice(keyIndex, 1)
+    return keyInfo;
+}
+
+const keyDown = (e: KeyboardEvent) => {
+    if (!e.isTrusted) return
+    currentKeysDown.push({time: Date.now(), key: e.key})
+}
+
 const keyUp = async (e: KeyboardEvent) => {
     if (!e.isTrusted) return
+    // If key was held for longer than 1 second
+    if (Date.now() - popCurrentKey(e.key).time > 1000) 
+        return;
+
     console.log(`Key up detected. Key: ${e.key}`)
     const target = e.target as HTMLInputElement|HTMLTextAreaElement|HTMLDivElement;
 
@@ -114,9 +131,12 @@ const keyUp = async (e: KeyboardEvent) => {
 const listenToTyping = (element: HTMLInputElement, previousElement: HTMLInputElement) => {
     currentlyTyped = ''
     previousElement && previousElement.removeEventListener("keyup", keyUp)
-    previousElement && previousElement.removeEventListener("mousedown", clearCurrentlyTyped)
+    previousElement && previousElement.removeEventListener("keydown", keyDown)
+    previousElement && previousElement.ownerDocument.removeEventListener("mousedown", clearCurrentlyTyped)
     element.addEventListener("keyup", keyUp);
-    element.addEventListener("mousedown", clearCurrentlyTyped)
+    element.addEventListener("keydown", keyDown);
+    element.ownerDocument.addEventListener("mousedown", clearCurrentlyTyped)
 };
+
 
 listenActiveElement(listenToTyping);

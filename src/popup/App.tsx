@@ -2,14 +2,18 @@ import './App.sass';
 import gear from './gear.svg';
 
 function App() {
-  return (
-    <div className="App">
-      ChatAbbr
-      <div className="flex flex-row">
-        <img src={gear} alt='Settings' width={50} height={50} />
-      </div>
-    </div>
-  );
+    const onSettingsClick = () => {
+        chrome.tabs.create( { url: chrome.runtime.getURL('js/pages.html') } )
+    }
+
+    return (
+        <div className="App">
+            ChatAbbr
+            <div className="flex flex-row">
+                <img src={gear} alt='Settings' width={50} height={50} onClick={onSettingsClick} />
+            </div>
+        </div>
+    );
 }
 
 export default App;
