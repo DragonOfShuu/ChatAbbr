@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import '../global.sass'
 import './index.sass';
 import App from './App';
 
