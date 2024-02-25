@@ -1,8 +1,8 @@
 // import React from 'react'
 import styles from './Root.module.sass'
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AbbrSidebar from './components/AbbrSidebar';
-import DataStateModel from './DataStateModel';
+import HotkeyDataContext from './DataStateContext';
 
 type Props = {
 
@@ -10,15 +10,14 @@ type Props = {
 
 const Root = (props: Props) => {
     const [saidBack, setSaidBack] = useState<boolean>(false)
-    const dataStateModel = useRef<DataStateModel>(new DataStateModel())
 
     useEffect(()=> {
 
     }, [])
 
     return (
-        <div>
-            <AbbrSidebar className='w-80' dataStateModel={dataStateModel.current} />
+        <HotkeyDataContext>
+            <AbbrSidebar className='w-80' />
 
             <div className='ml-80 flex flex-col gap-3 p-8'>
                 <h1>
@@ -33,7 +32,7 @@ const Root = (props: Props) => {
                     saidBack ? <p>Hello!</p> : <></>
                 }
             </div>
-        </div>
+        </HotkeyDataContext>
     )
 }
 

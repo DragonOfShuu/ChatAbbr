@@ -2,9 +2,16 @@ import { getKey, setKey } from "./databaseAPI"
 
 export const abbrKey = "abbreviations";
 
+export type Options = {
+
+}
+
 export type AbbrType = {
+    id: string,
+    name: string,
     hotkeys: string[],
-    output: string
+    output: string,
+    options: Options
 }
 
 export const setAbbrList = async (value: AbbrType[]) => {

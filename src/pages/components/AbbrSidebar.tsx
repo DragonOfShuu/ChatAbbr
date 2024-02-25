@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react"
 // import { getAbbrList } from "../../database/abbrAPI"
 import LoadingComp from "./Loading";
-import DataStateModel from "../DataStateModel";
 
 type SideBarProps = {
     className: string,
-    dataStateModel: DataStateModel,
 }
 
 const AbbrSidebar = (props: SideBarProps) => {
@@ -16,7 +14,7 @@ const AbbrSidebar = (props: SideBarProps) => {
             </h1>
             <div className={`h-8`} />
             <div className={`flex flex-col grow items-stretch`}>
-                <SideBarContent dataStateModel={props.dataStateModel} />
+                <SideBarContent />
             </div>
             <div>
                 <a href="https://dragonofshuu.dev/" target="_blank" rel="noopener noreferrer">
@@ -29,21 +27,28 @@ const AbbrSidebar = (props: SideBarProps) => {
 
 
 type ContentProps = {
-    dataStateModel: DataStateModel,
+
 }
 
 const SideBarContent = (props: ContentProps) => {
     const [isLoaded, setLoaded] = useState(false)
 
-    useEffect(()=>{props.dataStateModel.initalize().then(()=>setLoaded(true))}, [])
+    // useEffect(()=>{props.dataStateModel.initalize().then( ()=>setTimeout(()=>setLoaded(true), 2000000) )}, [])
 
     // Could I use suspense to avoid any kind of waterfalls? 
     // Maybe. Is it worth it? Definitely not.
-    if (!isLoaded) 
-        return <LoadingComp />
+    useEffect(()=> {
+        setTimeout(()=>setLoaded(true), 2000)
+    }, [])
+    
+    if (!isLoaded) {
+        console.log("Is going to loading component")
+        return <LoadingComp className={`grow flex justify-center items-center`} />
+    }
 
     return (
-        props.dataStateModel.viewAbbrList.length===0?
+        // props.dataStateModel.viewAbbrList.length===0?
+        true?
         <div className={`opacity-35 grow flex justify-center items-center`}>
             <h2>No Templates</h2>
         </div>:
