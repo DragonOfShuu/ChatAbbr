@@ -6,6 +6,7 @@ export type hotkeyData = {
     currentHotkeyEdit?: AbbrType
     hotkeyList: AbbrType[]
     hasEdits: boolean
+    dataHasBeenSet: boolean
 }
 
 export type HotkeyAction = 
@@ -21,7 +22,7 @@ const hotkeyContext = createContext<hotkeyData|null>(null);
 const hotkeyDispatchContext = createContext<Dispatch<HotkeyAction>|null>(null);
 
 export default function HotkeyDataContext({ children }: {children: ReactNode}) {
-    const [hotkeys, hotkeyDispatch] = useReducer(hotkeyReducer, {hotkeyList: [], hasEdits: false})
+    const [hotkeys, hotkeyDispatch] = useReducer(hotkeyReducer, {hotkeyList: [], hasEdits: false, dataHasBeenSet: false})
 
     return (
         // <context

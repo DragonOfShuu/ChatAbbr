@@ -1,5 +1,5 @@
 // import React from 'react'
-import styles from './Root.module.sass'
+// import styles from './Root.module.sass'
 import { useEffect, useState } from 'react';
 import AbbrSidebar from './components/AbbrSidebar';
 import HotkeyDataContext from './DataStateContext';
@@ -17,9 +17,9 @@ const Root = (props: Props) => {
 
     return (
         <HotkeyDataContext>
-            <AbbrSidebar className='w-80' />
+            <AbbrSidebar className='w-96' />
 
-            <div className='ml-80 flex flex-col gap-3 p-8'>
+            <div className='ml-96 flex flex-col gap-3 p-8'>
                 <h1>
                     Hello World!
                 </h1>
