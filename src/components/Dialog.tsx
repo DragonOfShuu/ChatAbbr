@@ -26,7 +26,7 @@ const Dialog = (props: Props) => {
             <div className='grow'>
                 {props.children}
             </div>
-            <div className={``}>
+            <div className={`flex`}> {/* TODO: Make buttons go in center and spread out */}
                 {
                     props.buttons?.map((buttonData)=>(
                         <button onClick={(e)=> buttonClicked(e, buttonData.func)}>
