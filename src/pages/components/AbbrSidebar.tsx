@@ -20,10 +20,8 @@ const AbbrSidebar = (props: { className: string }) => {
                 <h1 className="text-6xl">
                     ChatAbbr
                 </h1>
-                <div className={`h-8 flex flex-row items-end`}>
-                    <SidebarToolbar />
-                </div>
-                
+
+                <SidebarToolbar />
                 <SideBarContent />
                 
                 <div>
@@ -54,6 +52,22 @@ const SideBarContent = (props: {}) => {
         if (isChecked) setSelected([...selected, id])
         else setSelected([...selected.filter((inId)=> inId!==id)])
     }
+
+    const switchCurrentEdit = (id: string) => {
+        const newData = hotkeyContext.hotkeyList.find((h)=>id===h.id)
+        if (newData===undefined) return
+
+        hotkeyDispatchContext({ type: 'setCurrentEdit', hotkey: {...newData} })
+    }
+
+    const abbrClicked = (id: string) => {
+        if (hotkeyContext.currentHotkeyEdit) {
+            // Pull up the dialog. We can pass the change function that switches views to it
+            switchCurrentEdit(id)
+        } else {
+            switchCurrentEdit(id)
+        }
+    }
     
     // Could I use suspense to avoid any kind of waterfalls? 
     // Maybe. Is it worth it? Definitely not.
@@ -81,8 +95,9 @@ const SideBarContent = (props: {}) => {
 
                     return (
                         <div 
-                        className="bg-white bg-opacity-0 hover:bg-opacity-20 active:bg-black active:bg-opacity-10 text-lg font-bold flex flex-row gap-5 h-20 items-center"
-                        key={actualHotkey.id}>
+                        className="bg-white bg-opacity-0 hover:bg-opacity-20 active:bg-black active:bg-opacity-10 text-lg font-bold flex flex-row gap-5 h-20 items-center cursor-pointer"
+                        key={actualHotkey.id}
+                        onClick={()=> abbrClicked(actualHotkey.id)}>
                             <input 
                                 type="checkbox" 
                                 onChange={(x)=> checkmarkClicked(x.target.checked, actualHotkey.id)} 
@@ -96,10 +111,10 @@ const SideBarContent = (props: {}) => {
     )
 }
 
-const ToolbarButton = (props: {onClick: ()=>any, image: any, alt: string}) => {
+const ToolbarButton = (props: {onClick: ()=>any, image: any, alt: string, disabled?: boolean}) => {
     return (
-        <button className={`p-1`} >
-            <img src={props.image} alt={props.alt} className="w-4 h-4" onClick={props.onClick} />
+        <button className={`p-1`} disabled={props.disabled} >
+            <img src={props.image} alt={props.alt} className="w-8 h-8" onClick={props.onClick} />
         </button>
     )
 }
@@ -121,9 +136,9 @@ const SidebarToolbar = () => {
     }
 
     return (
-        <div className={`h-8 flex flex-row items-end`}>
+        <div className={`pt-8 pb-2 flex flex-row items-end gap-2`}>
             <ToolbarButton alt="Add Template" image={plusIcon} onClick={addTemplate} />
-            <ToolbarButton alt="Remove Templates" image={trashIcon} onClick={removeTemplates} />
+            <ToolbarButton alt="Remove Templates" image={trashIcon} onClick={removeTemplates} disabled={selected.length===0} />
         </div>
     )
 }

@@ -16,7 +16,8 @@ export type HotkeyAction =
     | { type: 'setHotkeys', hotkeys: AbbrType[] }
     | { type: 'changeEdits', hasEdits: boolean }
     | { type: 'changeSelection', id: string }
-    | { type: 'updateCurrentEdit', hotkey: AbbrType }
+    | { type: 'updateCurrentEdit', hotkey: Partial<AbbrType> }
+    | { type: 'setCurrentEdit', hotkey: AbbrType }
 
 const hotkeyContext = createContext<hotkeyData|null>(null);
 const hotkeyDispatchContext = createContext<Dispatch<HotkeyAction>|null>(null);
@@ -69,12 +70,22 @@ function hotkeyReducer(state: hotkeyData, action: HotkeyAction): hotkeyData {
             newState.hotkeyList.unshift(action.replacement)
             return newState;
         
-        case 'updateCurrentEdit':
+        case 'updateCurrentEdit': 
+            if (newState.currentHotkeyEdit===undefined) return state
+            newState.currentHotkeyEdit = {
+                ...newState.currentHotkeyEdit,
+                ...action.hotkey
+            };
+            return newState;
+        
+        case 'setCurrentEdit':
             newState.currentHotkeyEdit = action.hotkey;
             return newState;
         
         case 'remove':
             newState.hotkeyList = newState.hotkeyList.filter((x)=> !action.ids.includes(x.id));
+            if (newState.currentHotkeyEdit && action.ids.includes(newState.currentHotkeyEdit.id))
+                newState.currentHotkeyEdit = undefined
             return newState;
         
         case "setHotkeys":
