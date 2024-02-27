@@ -1,11 +1,11 @@
 {
-    "version": "1.0.0",
+    "version": "0.1.0",
     "manifest_version": 3,
-    "name": "ChatAbbr",
-    "description": "Allows you to type abbreviations for full sentences!",
+    "name": "Paradigm",
+    "description": "Create templates/hotkeys for expanding common phrases",
     "action": {
         "default_popup": "js/popup.html",
-        "default_title": "ChatAbbr"
+        "default_title": "Paradigm"
     },
     "content_scripts": [
         {

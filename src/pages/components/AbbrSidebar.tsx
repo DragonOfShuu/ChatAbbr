@@ -18,7 +18,7 @@ const AbbrSidebar = (props: { className: string }) => {
         <selectedContext.Provider value={{selected: selected, setSelected: setSelected}}>
             <div className={`${props.className??''} min-h-screen bg-fuchsia-200 fixed flex flex-col p-2`}>
                 <h1 className="text-6xl">
-                    ChatAbbr
+                    Paradigm
                 </h1>
 
                 <SidebarToolbar />

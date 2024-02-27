@@ -8,7 +8,7 @@ function App() {
 
     return (
         <div className="App">
-            ChatAbbr
+            Paradigm
             <div className="flex flex-row">
                 <img src={gear} alt='Settings' width={50} height={50} onClick={onSettingsClick} />
             </div>
