@@ -58,6 +58,7 @@ module.exports = {
         new CopyPlugin({
             patterns: [
                 { from: "manifest.json", to: "../manifest.json" },
+                { from: "src/extension_icons", to: "../icons" }
             ],
         }),
         ...getHtmlPlugins(["popup", "pages"]),

@@ -1,5 +1,4 @@
 // import React from 'react'
-
 import { HotkeyAction, useHotkeyContext, useHotkeyDispatchContext } from "../DataStateContext"
 
 type Props = {
@@ -20,17 +19,17 @@ const AbbrEditor = (props: Props) => {
     if (hotkeyData.currentHotkeyEdit===undefined) 
         return (
             <div className={`${props.className} w-full h-full flex justify-center items-center`}>
-                <h1 className={`text-8xl opacity-10`}>
+                <h1 className={`text-8xl opacity-10 select-none font-serif`}>
                     EDITOR
                 </h1>
             </div> 
         )
 
     return (
-        <div className={`${props.className} flex flex-col gap-5 w-full h-full`}>
+        <div className={`${props.className} flex flex-col gap-5 w-full h-full p-20`}>
             <input 
                 type={`text`} 
-                className={`w-full h-12 text-5xl border-b-fuchsia-500 rounded-lg text-fuchsia-700`}
+                className={`w-full h-12 text-5xl border-fuchsia-500 rounded-lg text-fuchsia-700 border-b-2 bg-transparent hover:bg-`}
                 placeholder="Name" 
                 onChange={(e)=> setWithEdits({type: 'updateCurrentEdit', hotkey: {name: e.target.value}})}
                 value={hotkeyData.currentHotkeyEdit.name} /> 
@@ -38,10 +37,10 @@ const AbbrEditor = (props: Props) => {
 
             </div>
             <div className={`flex flex-row-reverse gap-2`}>
-                <button>
+                <button className={`py-4`}>
                     Save
                 </button>
-                <button>
+                <button className={`py-4`}>
                     Cancel
                 </button>
                 {/* cancel and save buttons */}

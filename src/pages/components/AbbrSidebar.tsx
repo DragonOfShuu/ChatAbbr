@@ -7,6 +7,7 @@ import { useHotkeyContext, useHotkeyDispatchContext } from "../DataStateContext"
 // import minusIcon from "icons/minus.svg"
 import trashIcon from "@/icons/TrashIcon.svg"
 import plusIcon from "@/icons/plusIcon.svg"
+import Dialog, { DialogInfoType } from "@/components/Dialog";
 
 // @ts-ignore
 const selectedContext = createContext<{selected: string[], setSelected: (ids: string[])=>any}>(null) 
@@ -39,6 +40,7 @@ const SideBarContent = (props: {}) => {
     const hotkeyDispatchContext = useHotkeyDispatchContext();
     const {selected, setSelected} = useContext(selectedContext)
     const [isLoaded, setLoaded] = useState(false)
+    const [discardHotkeyInfo, setHotkeyDiscInfo] = useState<DialogInfoType>({open: false, data: {}})
 
     useEffect(()=> {
         getAbbrList().then((value): void =>{
@@ -57,13 +59,13 @@ const SideBarContent = (props: {}) => {
         const newData = hotkeyContext.hotkeyList.find((h)=>id===h.id)
         if (newData===undefined) return
 
+        hotkeyDispatchContext({ type: 'changeEdits', hasEdits: false })
         hotkeyDispatchContext({ type: 'setCurrentEdit', hotkey: {...newData} })
     }
 
     const abbrClicked = (id: string) => {
-        if (hotkeyContext.currentHotkeyEdit) {
-            // Pull up the dialog. We can pass the change function that switches views to it
-            switchCurrentEdit(id)
+        if (hotkeyContext.hasEdits) {
+            setHotkeyDiscInfo({open: true, data: {id: id}})
         } else {
             switchCurrentEdit(id)
         }
@@ -75,8 +77,13 @@ const SideBarContent = (props: {}) => {
         return <LoadingComp className={`grow flex justify-center items-center`} />
     
     return (
-        // props.dataStateModel.viewAbbrList.length===0?
         <div className={`flex flex-col grow items-stretch`}>
+            <Dialog 
+                dialogInfo={{info: discardHotkeyInfo, setInfo: setHotkeyDiscInfo}} 
+                buttons={[{text: 'YES', func: (e, data)=> switchCurrentEdit(data.id)}, {text: 'NO', func: ()=>true}]}>
+
+                Are you sure you want to cancel edits on the current template?
+            </Dialog>
             {
                 hotkeyContext.hotkeyList.length===0
                 ? // No templates
@@ -128,9 +135,13 @@ const SidebarToolbar = () => {
         hotkeyDispatchContext({ type: "create" })
     }
 
-    const removeTemplates = () => {
+    const removeTemplateDialog = () => {
         console.log("These ids will be removed: ", selected)
         // TODO: ADD DIALOG BEFORE DELETION
+        removeTemplates()
+    }
+
+    const removeTemplates = () => {
         hotkeyDispatchContext({ type: 'remove', ids: selected })
         setSelected([])
     }
@@ -138,7 +149,7 @@ const SidebarToolbar = () => {
     return (
         <div className={`pt-8 pb-2 flex flex-row items-end gap-2`}>
             <ToolbarButton alt="Add Template" image={plusIcon} onClick={addTemplate} />
-            <ToolbarButton alt="Remove Templates" image={trashIcon} onClick={removeTemplates} disabled={selected.length===0} />
+            <ToolbarButton alt="Remove Templates" image={trashIcon} onClick={removeTemplateDialog} disabled={selected.length===0} />
         </div>
     )
 }
