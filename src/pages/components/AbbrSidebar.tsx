@@ -1,13 +1,14 @@
 import { createContext, useContext, useEffect, useState } from "react"
 import LoadingComp from "./Loading";
-import { getAbbrList } from "@/database/abbrAPI";
+import { AbbrType, getAbbrList } from "@/database/abbrAPI";
 // import { getAbbrList } from "@/";
 import { useHotkeyContext, useHotkeyDispatchContext } from "../DataStateContext";
 
 // import minusIcon from "icons/minus.svg"
 import trashIcon from "@/icons/TrashIcon.svg"
 import plusIcon from "@/icons/plusIcon.svg"
-import Dialog, { DialogInfoType } from "@/components/Dialog";
+import { DialogInfoType } from "@/components/Dialog";
+import BooleanDialog from "@/components/BooleanDialog";
 
 // @ts-ignore
 const selectedContext = createContext<{selected: string[], setSelected: (ids: string[])=>any}>(null) 
@@ -40,7 +41,7 @@ const SideBarContent = (props: {}) => {
     const hotkeyDispatchContext = useHotkeyDispatchContext();
     const {selected, setSelected} = useContext(selectedContext)
     const [isLoaded, setLoaded] = useState(false)
-    const [discardHotkeyInfo, setHotkeyDiscInfo] = useState<DialogInfoType>({open: false, data: {}})
+    // const [discardHotkeyInfo, setHotkeyDiscInfo] = useState<DialogInfoType>({open: false, data: {}})
 
     useEffect(()=> {
         getAbbrList().then((value): void =>{
@@ -56,19 +57,21 @@ const SideBarContent = (props: {}) => {
     }
 
     const switchCurrentEdit = (id: string) => {
-        const newData = hotkeyContext.hotkeyList.find((h)=>id===h.id)
-        if (newData===undefined) return
+        let newData: AbbrType|undefined = hotkeyContext.hasEdits[id]
+        if (newData===undefined)
+            newData = hotkeyContext.hotkeyList.find((h)=>id===h.id)
+            if (newData===undefined) return
 
-        hotkeyDispatchContext({ type: 'changeEdits', hasEdits: false })
-        hotkeyDispatchContext({ type: 'setCurrentEdit', hotkey: {...newData} })
+        hotkeyDispatchContext([{ type: 'setCurrentEdit', hotkey: {...newData} }])
     }
 
     const abbrClicked = (id: string) => {
-        if (hotkeyContext.hasEdits) {
-            setHotkeyDiscInfo({open: true, data: {id: id}})
-        } else {
-            switchCurrentEdit(id)
-        }
+        if (id===hotkeyContext.currentHotkeyEdit?.id) return
+        switchCurrentEdit(id)
+        // if (hotkeyContext.hasEdits) {
+        //     // setHotkeyDiscInfo({open: true, data: {id: id}})
+        // } else {
+        // }
     }
     
     // Could I use suspense to avoid any kind of waterfalls? 
@@ -78,12 +81,6 @@ const SideBarContent = (props: {}) => {
     
     return (
         <div className={`flex flex-col grow items-stretch`}>
-            <Dialog 
-                dialogInfo={{info: discardHotkeyInfo, setInfo: setHotkeyDiscInfo}} 
-                buttons={[{text: 'YES', func: (e, data)=> switchCurrentEdit(data.id)}, {text: 'NO', func: ()=>true}]}>
-
-                Are you sure you want to cancel edits on the current template?
-            </Dialog>
             {
                 hotkeyContext.hotkeyList.length===0
                 ? // No templates
@@ -93,8 +90,7 @@ const SideBarContent = (props: {}) => {
                 : // There are templates
                 hotkeyContext.hotkeyList.map((hotkey)=> {
                     // If the id is the same as the currently being edited, use the current edited information instead
-                    const actualHotkey = hotkey.id===hotkeyContext.currentHotkeyEdit?.id 
-                        ? hotkeyContext.currentHotkeyEdit : hotkey;
+                    const actualHotkey = hotkeyContext.hasEdits[hotkey.id]??hotkey
 
                     let hotkeyText = `${actualHotkey.name} (${actualHotkey.hotkeys.join(', ')})`
                     if (hotkeyText.length > 20)
@@ -130,6 +126,7 @@ const SidebarToolbar = () => {
     // const hotkeyContext = useHotkeyContext();
     const hotkeyDispatchContext = useHotkeyDispatchContext();
     const {selected, setSelected} = useContext(selectedContext)
+    const [dialogInfo, setDialogInfo] = useState<DialogInfoType>({open: false, data: {}})
  
     const addTemplate = () => {
         hotkeyDispatchContext({ type: "create" })
@@ -137,17 +134,22 @@ const SidebarToolbar = () => {
 
     const removeTemplateDialog = () => {
         console.log("These ids will be removed: ", selected)
-        // TODO: ADD DIALOG BEFORE DELETION
-        removeTemplates()
+        setDialogInfo({...dialogInfo, open: true})
     }
 
     const removeTemplates = () => {
-        hotkeyDispatchContext({ type: 'remove', ids: selected })
+        hotkeyDispatchContext([{ type: 'discardEdits', ids: selected }, { type: 'remove', ids: selected }])
         setSelected([])
     }
 
     return (
         <div className={`pt-8 pb-2 flex flex-row items-end gap-2`}>
+            <BooleanDialog 
+                dialogInfo={{info: dialogInfo, setInfo: setDialogInfo}} 
+                noFunc={()=>true} yesFunc={removeTemplates}>
+
+                {`Are you sure you want to delete ${selected.length} template(s)?`}
+            </BooleanDialog>
             <ToolbarButton alt="Add Template" image={plusIcon} onClick={addTemplate} />
             <ToolbarButton alt="Remove Templates" image={trashIcon} onClick={removeTemplateDialog} disabled={selected.length===0} />
         </div>
