@@ -7,6 +7,8 @@ import { useHotkeyContext, useHotkeyDispatchContext } from "../DataStateContext"
 // import minusIcon from "icons/minus.svg"
 import trashIcon from "@/icons/TrashIcon.svg"
 import plusIcon from "@/icons/plusIcon.svg"
+// import saveIcon from "@/icons/FloppyDisk.svg"
+import FloppyDisk from "@/icons/FloppyDisk";
 import { DialogInfoType } from "@/components/Dialog";
 import BooleanDialog from "@/components/BooleanDialog";
 
@@ -59,7 +61,7 @@ const SideBarContent = (props: {}) => {
     const switchCurrentEdit = (id: string) => {
         let newData: AbbrType|undefined = hotkeyContext.hasEdits[id]
         if (newData===undefined)
-            newData = hotkeyContext.hotkeyList.find((h)=>id===h.id)
+            newData = hotkeyContext.hotkeyList[id]
             if (newData===undefined) return
 
         hotkeyDispatchContext([{ type: 'setCurrentEdit', hotkey: {...newData} }])
@@ -68,44 +70,51 @@ const SideBarContent = (props: {}) => {
     const abbrClicked = (id: string) => {
         if (id===hotkeyContext.currentHotkeyEdit?.id) return
         switchCurrentEdit(id)
-        // if (hotkeyContext.hasEdits) {
-        //     // setHotkeyDiscInfo({open: true, data: {id: id}})
-        // } else {
-        // }
     }
     
     // Could I use suspense to avoid any kind of waterfalls? 
     // Maybe. Is it worth it? Definitely not.
     if (!isLoaded) 
         return <LoadingComp className={`grow flex justify-center items-center`} />
+
+    const hotkeyListDisplay = Object.values(hotkeyContext.hotkeyList)
     
     return (
         <div className={`flex flex-col grow items-stretch`}>
             {
-                hotkeyContext.hotkeyList.length===0
+                hotkeyListDisplay.length===0
                 ? // No templates
                 <div className={`opacity-35 grow flex justify-center items-center`}>
                     <h2>No Templates</h2>
                 </div>
                 : // There are templates
-                hotkeyContext.hotkeyList.map((hotkey)=> {
+                hotkeyListDisplay.map((hotkey)=> {
                     // If the id is the same as the currently being edited, use the current edited information instead
-                    const actualHotkey = hotkeyContext.hasEdits[hotkey.id]??hotkey
+                    let needSaveIcon = true;
+                    let actualHotkey = hotkeyContext.hasEdits[hotkey.id]
+                    if (actualHotkey===undefined) {
+                        actualHotkey = hotkey
+                        needSaveIcon = false;
+                    }
 
                     let hotkeyText = `${actualHotkey.name} (${actualHotkey.hotkeys.join(', ')})`
-                    if (hotkeyText.length > 20)
-                        hotkeyText = hotkeyText.substring(0, 17)+'...'
 
                     return (
                         <div 
-                        className="bg-white bg-opacity-0 hover:bg-opacity-20 active:bg-black active:bg-opacity-10 text-lg font-bold flex flex-row gap-5 h-20 items-center cursor-pointer"
+                        className="bg-white bg-opacity-0 hover:bg-opacity-20 active:bg-black active:bg-opacity-10 text-lg font-bold flex flex-row gap-5 h-20 items-center cursor-pointer w-full max-w-full overflow-hidden"
                         key={actualHotkey.id}
                         onClick={()=> abbrClicked(actualHotkey.id)}>
                             <input 
                                 type="checkbox" 
                                 onChange={(x)=> checkmarkClicked(x.target.checked, actualHotkey.id)} 
                                 checked={selected.includes(actualHotkey.id)} />
-                            {hotkeyText}
+                            <div className={`flex flex-row py-5 h-full w-full max-w-full items-center`}>
+                                <p className="overflow-ellipsis overflow-hidden whitespace-nowrap max-w-[250px] min-w-0">
+                                    {hotkeyText}
+                                </p>
+                                <div className={`grow`} />
+                                { needSaveIcon?<FloppyDisk className={`h-full w-auto opacity-30 hover:opacity-60`} onClick={()=> hotkeyDispatchContext({type: 'saveEdits', id: actualHotkey.id})} color={`#e11d48`} /> : <></> }
+                            </div>
                         </div>
                     )
                 })

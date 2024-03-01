@@ -21,11 +21,7 @@ const AbbrEditor = (props: Props) => {
     const hotkeyDataDispatch = useHotkeyDispatchContext()
 
     const setWithEdits = (action: HotkeyAction) => {
-        if (hotkeyData.currentHotkeyEdit===undefined) return
-        // if (!hotkeyData.hasEdits) {
-        //     hotkeyDataDispatch({type: 'changeEdits', hotkey: });
-        // }
-        hotkeyDataDispatch([action, { type: 'changeEdits', hotkey: hotkeyData.currentHotkeyEdit }])
+        hotkeyDataDispatch([action])
     }
 
     if (hotkeyData.currentHotkeyEdit===undefined) 
@@ -36,7 +32,7 @@ const AbbrEditor = (props: Props) => {
                 </h1>
             </div> 
         )
-
+    
     return (
         <setDataWithEdits.Provider value={setWithEdits}>
             <div className={`${props.className} w-full h-full`}>

@@ -5,7 +5,7 @@ import { ListIntersection } from "@/utilities";
 
 export type hotkeyData = {
     currentHotkeyEdit?: AbbrType
-    hotkeyList: AbbrType[]
+    hotkeyList: { [id: string]: AbbrType }
     hasEdits: { [id: string]: AbbrType }
     dataHasBeenSet: boolean
 }
@@ -20,12 +20,13 @@ export type HotkeyAction =
     | { type: 'changeSelection', id: string }
     | { type: 'updateCurrentEdit', hotkey: Partial<AbbrType> }
     | { type: 'setCurrentEdit', hotkey: AbbrType }
+    | { type: 'saveEdits', id: string }
 
 const hotkeyContext = createContext<hotkeyData|null>(null);
 const hotkeyDispatchContext = createContext<Dispatch<HotkeyAction>|null>(null);
 
 export default function HotkeyDataContext({ children }: {children: ReactNode}) {
-    const [hotkeys, hotkeyDispatch] = useReducer(hotkeyReducer, {hotkeyList: [], hasEdits: {}, dataHasBeenSet: false})
+    const [hotkeys, hotkeyDispatch] = useReducer(hotkeyReducer, {hotkeyList: {}, hasEdits: {}, dataHasBeenSet: false})
 
     return (
         // <context
@@ -73,16 +74,8 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
             return newState;
         
         case 'change': // Change a hotkey by giving a replacement. Will also allow you to add a hotkey that doesn't exist
-            let changeOccurred = false;
-            newState.hotkeyList = newState.hotkeyList.map((h)=>{ 
-                if (h.id!==action.replacement.id)
-                    return h
-                changeOccurred = true;
-                return action.replacement
-            })
-            if (changeOccurred) return newState
-            newState.hotkeyList.unshift(action.replacement)
-            return newState;
+            newState.hotkeyList = changeOrUnshift(newState.hotkeyList, action.replacement.id, action.replacement)
+            return newState
         
         case 'updateCurrentEdit': // Update the currentEdit with partial data
             if (newState.currentHotkeyEdit===undefined) return false
@@ -90,6 +83,7 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
                 ...newState.currentHotkeyEdit,
                 ...action.hotkey
             };
+            newState.hasEdits[newState.currentHotkeyEdit.id] = newState.currentHotkeyEdit
             return newState;
         
         case 'setCurrentEdit': // Set the currentEdit with full data
@@ -98,13 +92,15 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
         
         case 'remove': // Remove templates
             if ( ListIntersection(action.ids, Object.keys(newState.hasEdits)) ) return false
-            newState.hotkeyList = newState.hotkeyList.filter((x)=> !action.ids.includes(x.id));
-            if (newState.currentHotkeyEdit && action.ids.includes(newState.currentHotkeyEdit.id))
+            action.ids.forEach((id)=> delete newState.hotkeyList[id])
+            if (newState.currentHotkeyEdit && action.ids.includes(newState.currentHotkeyEdit?.id))
                 newState.currentHotkeyEdit = undefined
             return newState;
         
         case "setHotkeys": // Set entire hotkey list
-            newState.hotkeyList = action.hotkeys;
+            const hotkeyObject: {[id: string]: AbbrType} = {}
+            action.hotkeys.forEach((h)=> hotkeyObject[h.id] = h)
+            newState.hotkeyList = hotkeyObject
             return newState
         
         case "changeEdits": // Set whether the currentEdit has edits
@@ -117,12 +113,27 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
             )
             return newState
         
+        case "saveEdits":
+            const edits = newState.hasEdits[action.id]
+            if (edits===undefined) return false;
+            newState.hotkeyList = changeOrUnshift(newState.hotkeyList, edits.id, edits)
+            delete newState.hasEdits[action.id]
+            return newState;
+        
         case "changeSelection": // Change currentHotkeyEdit by id
-            newState.currentHotkeyEdit = newState.hotkeyList.find((h)=> h.id===action.id)
+            newState.currentHotkeyEdit = newState.hotkeyList[action.id]
             return newState
     }
 }
 
+function changeOrUnshift(object: any, id: string, data: any) {
+    if (object[id]) {
+        object[id] = data
+        return {...object}
+    }
+
+    object = {id: data, ...object}
+}
 
 
 // I feel, alive, tonighttt, heyeyy heeeyy eey ey!
