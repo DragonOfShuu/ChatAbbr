@@ -25,8 +25,6 @@ const initAbbr = async () => {
 export const getAbbrList = async (): Promise<AbbrType[]> => {
     try {
         const value = (await getKey(abbrKey)) as AbbrType[]
-        // THIS LINE IS ONLY HERE FOR DEBUGGING
-        value.push({id: "urmom", hotkeys: ["-thx"], name: "Thank you!", options: {}, output: "Thank you for using this extension!"})
         return value
     } catch (e) { 
         initAbbr();

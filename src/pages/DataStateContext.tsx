@@ -1,7 +1,6 @@
 import { Dispatch, ReactNode, createContext, useContext, useReducer } from "react"
 import { AbbrType } from "../database/abbrAPI";
 import { generateUUID } from "../database/utilities";
-import { ListIntersection } from "@/utilities";
 
 export type hotkeyData = {
     currentHotkeyEdit?: AbbrType
@@ -19,7 +18,7 @@ export type HotkeyAction =
     | { type: 'discardEdits', ids: string[] }
     | { type: 'changeSelection', id: string }
     | { type: 'updateCurrentEdit', hotkey: Partial<AbbrType> }
-    | { type: 'setCurrentEdit', hotkey: AbbrType }
+    | { type: 'setCurrentEdit', hotkey: AbbrType|undefined }
     | { type: 'saveEdits', id: string }
 
 const hotkeyContext = createContext<hotkeyData|null>(null);
@@ -63,19 +62,23 @@ function hotkeyReducer(state: hotkeyData, action: HotkeyAction|HotkeyAction[]): 
 function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false {
     switch (action.type) {
         case 'create': // Create new hotkey and add it to the currentEdit
+            const id = generateUUID()
             let newHotkey: AbbrType = {
-                id: generateUUID(),
+                id: id,
                 hotkeys: ["-hw"],
                 name: "New Hotkey",
                 output: "Hello World! (Thankfully not homework)",
                 options: {}
             }
-            newState.currentHotkeyEdit = newHotkey
+            newState.currentHotkeyEdit = newHotkey;
+            newState.hasEdits[id] = newHotkey;
             return newState;
+            
         
         case 'change': // Change a hotkey by giving a replacement. Will also allow you to add a hotkey that doesn't exist
             newState.hotkeyList = changeOrUnshift(newState.hotkeyList, action.replacement.id, action.replacement)
             return newState
+
         
         case 'updateCurrentEdit': // Update the currentEdit with partial data
             if (newState.currentHotkeyEdit===undefined) return false
@@ -85,33 +88,44 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
             };
             newState.hasEdits[newState.currentHotkeyEdit.id] = newState.currentHotkeyEdit
             return newState;
+
         
         case 'setCurrentEdit': // Set the currentEdit with full data
-            newState.currentHotkeyEdit = {...action.hotkey};
+            newState.currentHotkeyEdit = action.hotkey?{...action.hotkey}:undefined;
             return newState;
+
         
         case 'remove': // Remove templates
-            if ( ListIntersection(action.ids, Object.keys(newState.hasEdits)) ) return false
-            action.ids.forEach((id)=> delete newState.hotkeyList[id])
-            if (newState.currentHotkeyEdit && action.ids.includes(newState.currentHotkeyEdit?.id))
+            console.log("Removing templates...")
+            const editIds = Object.keys(newState.hasEdits);
+            // For safety reasons, let's not remove templates
+            // unless changes have been discarded
+            const removeables = action.ids.filter((id)=> !editIds.includes(id));
+
+            removeables.forEach((id)=> delete newState.hotkeyList[id])
+            if (newState.currentHotkeyEdit && removeables.includes(newState.currentHotkeyEdit?.id))
                 newState.currentHotkeyEdit = undefined
             return newState;
+
         
         case "setHotkeys": // Set entire hotkey list
             const hotkeyObject: {[id: string]: AbbrType} = {}
             action.hotkeys.forEach((h)=> hotkeyObject[h.id] = h)
             newState.hotkeyList = hotkeyObject
             return newState
+
         
         case "changeEdits": // Set whether the currentEdit has edits
             newState.hasEdits[action.hotkey.id] = action.hotkey
             return newState;
+
 
         case "discardEdits":
             action.ids.forEach((id)=> 
                 delete newState.hasEdits[id]
             )
             return newState
+
         
         case "saveEdits":
             const edits = newState.hasEdits[action.id]
@@ -119,6 +133,7 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
             newState.hotkeyList = changeOrUnshift(newState.hotkeyList, edits.id, edits)
             delete newState.hasEdits[action.id]
             return newState;
+
         
         case "changeSelection": // Change currentHotkeyEdit by id
             newState.currentHotkeyEdit = newState.hotkeyList[action.id]
@@ -132,7 +147,7 @@ function changeOrUnshift(object: any, id: string, data: any) {
         return {...object}
     }
 
-    object = {id: data, ...object}
+    return { [id]: data, ...object }
 }
 
 

@@ -22,9 +22,7 @@ const Root = (props: Props) => {
     )
 }
 
-const AppErrorScreen = (props: FallbackProps) => {
-    console.log("App Screen Loaded outside of hook")
-
+const AppErrorScreen = (props: FallbackProps) => {   
     const error = props.error as Error
     const errorMessage = `${error.stack}`
 

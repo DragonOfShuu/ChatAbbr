@@ -33,6 +33,8 @@ const AbbrEditor = (props: Props) => {
             </div> 
         )
     
+    const hasPendingEdits = hotkeyData.hasEdits[hotkeyData.currentHotkeyEdit.id]!==undefined;
+    
     return (
         <setDataWithEdits.Provider value={setWithEdits}>
             <div className={`${props.className} w-full h-full`}>
@@ -57,10 +59,19 @@ const AbbrEditor = (props: Props) => {
                         </div>
                     </div>
                     <div className={`flex flex-row-reverse gap-2 px-16 py-8`}>
-                        <button className={`py-4 w-20`}>
+                        <button 
+                            className={`py-4 w-20`} 
+                            disabled={!hasPendingEdits} 
+                            onClick={()=> hotkeyDataDispatch({ type: 'saveEdits', id: hotkeyData.currentHotkeyEdit?.id??'' })}>
+
                             Save
                         </button>
-                        <button className={`py-4 w-20`}>
+                        <button 
+                            className={`py-4 w-20`}
+                            disabled={!hasPendingEdits} 
+                            onClick={
+                                ()=> hotkeyDataDispatch([ { type: 'discardEdits', ids: [hotkeyData.currentHotkeyEdit?.id??''] }, { type: 'setCurrentEdit', hotkey: hotkeyData.hotkeyList[hotkeyData.currentHotkeyEdit?.id??'']??undefined } ])
+                            }>
                             Cancel
                         </button>
                         {/* cancel and save buttons */}
