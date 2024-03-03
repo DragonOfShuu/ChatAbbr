@@ -1,5 +1,5 @@
 import './App.sass';
-import gear from './gear.svg';
+import Gear from './gear.svg';
 
 function App() {
     const onSettingsClick = () => {
@@ -10,7 +10,8 @@ function App() {
         <div className="App">
             Paradigm
             <div className="flex flex-row">
-                <img src={gear} alt='Settings' width={50} height={50} onClick={onSettingsClick} />
+                {/* <img src={Gear} alt='Settings' width={50} height={50} onClick={onSettingsClick} /> */}
+                <Gear width={50} height={50} onClick={onSettingsClick} />
             </div>
         </div>
     );

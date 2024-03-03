@@ -5,8 +5,8 @@ import { AbbrType, getAbbrList } from "@/database/abbrAPI";
 import { useHotkeyContext, useHotkeyDispatchContext } from "../DataStateContext";
 
 // import minusIcon from "icons/minus.svg"
-import trashIcon from "@/icons/TrashIcon.svg"
-import plusIcon from "@/icons/plusIcon.svg"
+import TrashIcon from "@/icons/TrashIcon.svg"
+import PlusIcon from "@/icons/plusIcon.svg"
 // import saveIcon from "@/icons/FloppyDisk.svg"
 import FloppyDisk from "@/icons/FloppyDisk";
 import { DialogInfoType } from "@/components/Dialog";
@@ -123,10 +123,11 @@ const SideBarContent = (props: {}) => {
     )
 }
 
-const ToolbarButton = (props: {onClick: ()=>any, image: any, alt: string, disabled?: boolean}) => {
+const ToolbarButton = (props: {onClick: ()=>any, Image: SVGRType, disabled?: boolean, alt: string}) => {
     return (
-        <button className={`p-1`} disabled={props.disabled} >
-            <img src={props.image} alt={props.alt} className="w-8 h-8" onClick={props.onClick} />
+        <button className={`p-1`} disabled={props.disabled} onClick={props.onClick} >
+            {/* <img src={props.Image} alt={props.alt} className="w-8 h-8" onClick={props.onClick} /> */}
+            <props.Image className={`w-8 h-8`} stroke="#ffffff" />
         </button>
     )
 }
@@ -159,8 +160,8 @@ const SidebarToolbar = () => {
 
                 {`Are you sure you want to delete ${selected.length} template(s)?`}
             </BooleanDialog>
-            <ToolbarButton alt="Add Template" image={plusIcon} onClick={addTemplate} />
-            <ToolbarButton alt="Remove Templates" image={trashIcon} onClick={removeTemplateDialog} disabled={selected.length===0} />
+            <ToolbarButton alt="Add Template" Image={PlusIcon} onClick={addTemplate} />
+            <ToolbarButton alt="Remove Templates" Image={TrashIcon} onClick={removeTemplateDialog} disabled={selected.length===0} />
         </div>
     )
 }

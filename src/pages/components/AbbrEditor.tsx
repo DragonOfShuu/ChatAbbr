@@ -1,8 +1,8 @@
 // import React from 'react'
 import { HotkeyAction, useHotkeyContext, useHotkeyDispatchContext } from "../DataStateContext"
-import pencilIcon from '@/icons/Pencil.svg'
+import PencilIcon from '@/icons/Pencil.svg'
 import noPencilIcon from '@/icons/NoPencil.svg'
-import plusIcon from '@/icons/plusIcon.svg'
+import PlusIcon from '@/icons/plusIcon.svg'
 import { createContext, useContext } from "react"
 import styles from './AbbrEditor.module.sass'
 
@@ -110,8 +110,10 @@ const HotkeyEditor = (props: {className?: string}) => {
                                 {h}
                                 <div className="grow" />
                                 {/** Pencil and x to delete */}
-                                <img src={pencilIcon} alt={`Edit Hotkey`} /> {/** Pencil changes to 'noPencil' when editing */}
-                                <img src={plusIcon} alt={`Remove Hotkey`} className={`rotate-45`} /> {/** Changes to checkmark when editing */}
+                                {/* <img src={PencilIcon} alt={`Edit Hotkey`} /> * Pencil changes to 'noPencil' when editing */}
+                                <PencilIcon stroke="#000000" width={50} height={50} />
+                                {/* <img src={PlusIcon} alt={`Remove Hotkey`} className={`rotate-45`} /> * Changes to checkmark when editing */}
+                                <PlusIcon stroke="#000000" className={`rotate-45`} width={50} height={50} />
                             </div>
                         )
                     })
