@@ -1,10 +1,12 @@
 // import React from 'react'
 import { HotkeyAction, useHotkeyContext, useHotkeyDispatchContext } from "../DataStateContext"
 import PencilIcon from '@/icons/Pencil.svg'
-import noPencilIcon from '@/icons/NoPencil.svg'
+import NoPencilIcon from '@/icons/NoPencil.svg'
 import PlusIcon from '@/icons/plusIcon.svg'
-import { createContext, useContext } from "react"
+import CheckIcon from '@/icons/Check.svg'
+import { createContext, useContext, useEffect, useState } from "react"
 import styles from './AbbrEditor.module.sass'
+import { textAllowed } from "@/globalCharacterRules"
 
 type Props = {
     className: string
@@ -12,6 +14,7 @@ type Props = {
 
 const setDataWithEdits = createContext<((action: HotkeyAction) => void)|null>(null)
 
+/* Might delete this later... stay tuned */
 const useDataWithEdits = () => {
     return useContext(setDataWithEdits) as (action: HotkeyAction) => void;
 }
@@ -87,12 +90,12 @@ const AbbrEditor = (props: Props) => {
 
 const HotkeyEditor = (props: {className?: string}) => {
     const hotkeyData = useHotkeyContext();
-    const hotkeyDispatch = useHotkeyDispatchContext();
-    const setDataWithEdits = useDataWithEdits();
+    // const hotkeyDispatch = useHotkeyDispatchContext();
+    // const setDataWithEdits = useDataWithEdits();
     
-    if (hotkeyData.currentHotkeyEdit===undefined) return <>No Data</>
     // Use onblur to set changes when navigating away from pencil element
     return (
+        hotkeyData.currentHotkeyEdit===undefined?<>No Data</>:
         <div className={`flex flex-col items-stretch ${props.className??''}`}>
             {/** toolbar */}
             <div className={`flex flex-row`}>
@@ -101,24 +104,96 @@ const HotkeyEditor = (props: {className?: string}) => {
             {/** Actual Hotkeys */}
             <div className={`flex flex-col items-stretch grow`}>
                 {
-                    hotkeyData.currentHotkeyEdit?.hotkeys.map((h, index)=>{
+                    hotkeyData.currentHotkeyEdit?.hotkeys.map((h, index, hotkeyArray)=>{
                         return (
-                            <div 
-                                key={h} 
-                                className={`px-4 py-8 text-xl flex flex-row items-center ${styles.hotkeyContainer} ${index%2?styles.hotkeyContainer1:styles.hotkeyContainer2}`}>
-
-                                {h}
-                                <div className="grow" />
-                                {/** Pencil and x to delete */}
-                                {/* <img src={PencilIcon} alt={`Edit Hotkey`} /> * Pencil changes to 'noPencil' when editing */}
-                                <PencilIcon stroke="#000000" width={50} height={50} />
-                                {/* <img src={PlusIcon} alt={`Remove Hotkey`} className={`rotate-45`} /> * Changes to checkmark when editing */}
-                                <PlusIcon stroke="#000000" className={`rotate-45`} width={50} height={50} />
-                            </div>
+                            <HotkeyElement text={h} index={index} hotkeyArray={hotkeyArray} />
                         )
                     })
                 }
             </div>
+        </div>
+    )
+}
+
+const HotkeyElement = (props: { text: string, index: number, hotkeyArray: string[] }) => {
+    const hotkeyData = useHotkeyContext();
+    const dispatch = useHotkeyDispatchContext();
+
+    const [hotkeyText, setHotkeyText] = useState<string>(props.text)
+    const [isEditing, setEditing] = useState<boolean>(false)
+
+    const iconSettings = {stroke:"#000000", width:50, height:50, strokeWidth: 2}
+
+    useEffect(()=> {
+        setHotkeyText(props.text)
+        setEditing(false)
+    }, [props.text])
+
+    const deleteThis = () => {
+        dispatch({ 
+            type: 'updateCurrentEdit', 
+            hotkey: { hotkeys: props.hotkeyArray.filter((h)=> h!==props.text) } 
+        })
+    }
+
+    const cancelEdits = () => {
+        if (!isEditing) return
+        console.log("Cancelling hotkey edits...")
+        setHotkeyText(props.text); 
+        setEditing(false);
+    }
+
+    const installEdits = () => {
+        console.log("Installing hotkey edits...")
+        dispatch({
+            type: 'updateCurrentEdit',
+            hotkey: { hotkeys: props.hotkeyArray.map((h)=> 
+                h===props.text?hotkeyText:h
+            ) }
+        })
+        setEditing(false)
+    }
+
+    const inputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newText = e.target.value;
+        if (textAllowed(newText)) 
+            setHotkeyText(newText)
+        // else
+            // setHotkeyText
+    }
+
+    if (hotkeyData.currentHotkeyEdit===undefined) return <>No Data</>
+
+    return (
+        <div 
+            key={props.text} 
+            className={`px-4 py-8 text-xl flex flex-row items-center ${styles.hotkeyContainer} ${props.index%2?styles.hotkeyContainer1:styles.hotkeyContainer2}`}
+            > {/* onBlur={cancelEdits}> */}
+            
+            {
+                isEditing?
+                    <>
+                        {/* CHECK FOR VALID CHARACTERS IN THE FUTURE */}
+                        <input
+                            onChange={inputChanged}
+                            value={hotkeyText} />
+                        
+                        <div className={`grow`} />
+
+                        <NoPencilIcon {...iconSettings} onClick={cancelEdits} />
+                        <CheckIcon {...iconSettings} onClick={installEdits} />
+                    </>
+                :
+                    <>
+                        {props.text}
+                        <div className="grow" />
+                        {/** Pencil and x to delete */}
+                        {/* <img src={PencilIcon} alt={`Edit Hotkey`} /> * Pencil changes to 'noPencil' when editing */}
+                        <PencilIcon {...iconSettings} onClick={()=> setEditing(true)} />
+                        {/* <img src={PlusIcon} alt={`Remove Hotkey`} className={`rotate-45`} /> * Changes to checkmark when editing */}
+                        <PlusIcon {...iconSettings} className={`rotate-45`} onClick={deleteThis} />
+                    </>
+            }
         </div>
     )
 }

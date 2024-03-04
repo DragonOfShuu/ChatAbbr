@@ -80,7 +80,7 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
             return newState
 
         
-        case 'updateCurrentEdit': // Update the currentEdit with partial data
+        case 'updateCurrentEdit': // Update the currentEdit with partial data. Also automatically saves into edits
             if (newState.currentHotkeyEdit===undefined) return false
             newState.currentHotkeyEdit = {
                 ...newState.currentHotkeyEdit,

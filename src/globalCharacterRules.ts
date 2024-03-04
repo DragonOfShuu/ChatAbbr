@@ -12,7 +12,7 @@ export const charAllowed = (char: string): boolean => {
 export const textAllowed = (text: string): boolean => {
     text = text.toLowerCase();
     for (let i = 0; i<text.length; i++) {
-        if (charAllowed(text[i])) return false
+        if (!charAllowed(text[i])) return false
     }
     return true;
 }

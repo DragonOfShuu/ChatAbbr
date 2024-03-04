@@ -8,7 +8,7 @@ import { useHotkeyContext, useHotkeyDispatchContext } from "../DataStateContext"
 import TrashIcon from "@/icons/TrashIcon.svg"
 import PlusIcon from "@/icons/plusIcon.svg"
 // import saveIcon from "@/icons/FloppyDisk.svg"
-import FloppyDisk from "@/icons/FloppyDisk";
+import FloppyDisk from "@/icons/FloppyDisk.svg";
 import { DialogInfoType } from "@/components/Dialog";
 import BooleanDialog from "@/components/BooleanDialog";
 
@@ -113,7 +113,7 @@ const SideBarContent = (props: {}) => {
                                     {hotkeyText}
                                 </p>
                                 <div className={`grow`} />
-                                { needSaveIcon?<FloppyDisk className={`h-full w-auto opacity-30 hover:opacity-60`} onClick={()=> hotkeyDispatchContext({type: 'saveEdits', id: actualHotkey.id})} color={`#e11d48`} /> : <></> }
+                                { needSaveIcon?<FloppyDisk className={`h-full w-auto opacity-30 hover:opacity-60`} onClick={()=> hotkeyDispatchContext({type: 'saveEdits', id: actualHotkey.id})} stroke={`#e11d48`} /> : <></> }
                             </div>
                         </div>
                     )
