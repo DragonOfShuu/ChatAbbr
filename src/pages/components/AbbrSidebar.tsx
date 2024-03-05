@@ -11,6 +11,7 @@ import PlusIcon from "@/icons/plusIcon.svg"
 import FloppyDisk from "@/icons/FloppyDisk.svg";
 import { DialogInfoType } from "@/components/Dialog";
 import BooleanDialog from "@/components/BooleanDialog";
+import { ToolbarButton } from "../../components/ToolbarButton";
 
 // @ts-ignore
 const selectedContext = createContext<{selected: string[], setSelected: (ids: string[])=>any}>(null) 
@@ -123,17 +124,7 @@ const SideBarContent = (props: {}) => {
     )
 }
 
-const ToolbarButton = (props: {onClick: ()=>any, Image: SVGRType, disabled?: boolean, alt: string}) => {
-    return (
-        <button className={`p-1`} disabled={props.disabled} onClick={props.onClick} >
-            {/* <img src={props.Image} alt={props.alt} className="w-8 h-8" onClick={props.onClick} /> */}
-            <props.Image className={`w-8 h-8`} stroke="#ffffff" />
-        </button>
-    )
-}
-
 const SidebarToolbar = () => {
-    // const hotkeyContext = useHotkeyContext();
     const hotkeyDispatchContext = useHotkeyDispatchContext();
     const {selected, setSelected} = useContext(selectedContext)
     const [dialogInfo, setDialogInfo] = useState<DialogInfoType>({open: false, data: {}})
