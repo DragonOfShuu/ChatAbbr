@@ -1,5 +1,5 @@
 import { Dispatch, ReactNode, createContext, useContext, useReducer } from "react"
-import { AbbrType } from "../database/abbrAPI";
+import { AbbrType, setAbbrList } from "../database/abbrAPI";
 import { generateUUID } from "../database/utilities";
 
 export type hotkeyData = {
@@ -19,7 +19,7 @@ export type HotkeyAction =
     | { type: 'changeSelection', id: string }
     | { type: 'updateCurrentEdit', hotkey: Partial<AbbrType> }
     | { type: 'setCurrentEdit', hotkey: AbbrType|undefined }
-    | { type: 'saveEdits', id: string }
+    | { type: 'saveEdits', id: string|string[] }
 
 const hotkeyContext = createContext<hotkeyData|null>(null);
 const hotkeyDispatchContext = createContext<Dispatch<HotkeyAction>|null>(null);
@@ -45,6 +45,13 @@ export function useHotkeyDispatchContext() {
     return useContext(hotkeyDispatchContext) as Dispatch<HotkeyAction|HotkeyAction[]>;
 }
 
+function saveToBrowser(oldState: hotkeyData, newState: hotkeyData) {
+    if (Object.is(oldState.hotkeyList, newState.hotkeyList)) 
+        return 
+
+    setAbbrList(Object.values(newState.hotkeyList))
+}
+
 function hotkeyReducer(state: hotkeyData, action: HotkeyAction|HotkeyAction[]): hotkeyData {
     const newState = {...state}
     const actions = Array.isArray(action)?action:[action]
@@ -55,6 +62,10 @@ function hotkeyReducer(state: hotkeyData, action: HotkeyAction|HotkeyAction[]): 
         if (value===false) return;
         changes = true;
     })
+
+    // Save Templates
+    saveToBrowser(state, newState)
+
     // If there are no changes, let's *not* update the entire UI
     return changes?newState:state;
 }
@@ -71,7 +82,7 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
                 options: {}
             }
             newState.currentHotkeyEdit = newHotkey;
-            newState.hasEdits[id] = newHotkey;
+            newState.hasEdits = {[id]: newHotkey, ...newState.hasEdits};
             return newState;
             
         
@@ -103,6 +114,8 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
             const removeables = action.ids.filter((id)=> !editIds.includes(id));
 
             removeables.forEach((id)=> delete newState.hotkeyList[id])
+            newState.hotkeyList = {...newState.hotkeyList} // Create new object to trigger react
+
             if (newState.currentHotkeyEdit && removeables.includes(newState.currentHotkeyEdit?.id))
                 newState.currentHotkeyEdit = undefined
             return newState;
@@ -116,27 +129,39 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
 
         
         case "changeEdits": // Set whether the currentEdit has edits
-            newState.hasEdits[action.hotkey.id] = action.hotkey
+            newState.hasEdits = {...newState.hasEdits, [action.hotkey.id]: action.hotkey}
             return newState;
 
 
         case "discardEdits":
             action.ids.forEach((id)=> 
                 delete newState.hasEdits[id]
-            )
-            return newState
+            );
+            newState.hasEdits = {...newState.hasEdits} // New object to trigger react
+            return newState;
 
         
         case "saveEdits":
-            const edits = newState.hasEdits[action.id]
-            if (edits===undefined) return false;
-            newState.hotkeyList = changeOrUnshift(newState.hotkeyList, edits.id, edits)
-            delete newState.hasEdits[action.id]
+            // const edits: string[] = newState.hasEdits[action.id]
+            const editIds1: string[] = Array.isArray(action.id)?action.id:[action.id]
+            const edits: AbbrType[] = []
+            editIds1.forEach((e)=> {
+                let currentEdit = newState.hasEdits[e]
+                if (currentEdit) edits.push(currentEdit)
+            })
+            if (!edits) return false;
+
+            edits.forEach((e)=> {
+                newState.hotkeyList = changeOrUnshift(newState.hotkeyList, e.id, e)
+                delete newState.hasEdits[e.id]
+            })
+            newState.hasEdits = {...newState.hasEdits} // Trigger react
+
             return newState;
 
         
         case "changeSelection": // Change currentHotkeyEdit by id
-            newState.currentHotkeyEdit = newState.hotkeyList[action.id]
+            newState.currentHotkeyEdit = {...newState.hotkeyList[action.id]}
             return newState
     }
 }

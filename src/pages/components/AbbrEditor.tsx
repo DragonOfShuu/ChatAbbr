@@ -29,12 +29,13 @@ const AbbrEditor = (props: Props) => {
                     placeholder="Name" 
                     onChange={(e)=> hotkeyDataDispatch({type: 'updateCurrentEdit', hotkey: {name: e.currentTarget.value}})}
                     value={hotkeyData.currentHotkeyEdit.name} /> 
-                <div className={`grow px-16 py-5 flex flex-row justify-evenly`}>
-                    <div className={`w-1/3`}>
+
+                <div className={`h-[70vh] px-16 py-5 flex flex-row gap-3`}>
+                    <div className={`w-1/3 h-full`}>
                         {/* Box for all hotkeys */}
-                        <HotkeyEditor className={`h-full`} />
+                        <HotkeyEditor className={`h-full max-h-full`} />
                     </div>
-                    <div className={`w-1/2`}>
+                    <div className={`w-1/2 grow`}>
                         <textarea 
                             value={hotkeyData.currentHotkeyEdit.output} 
                             onChange={(e)=> hotkeyDataDispatch({type: 'updateCurrentEdit', hotkey: {output: e.currentTarget.value}})} 
@@ -42,7 +43,8 @@ const AbbrEditor = (props: Props) => {
                             placeholder="Output Text"/>
                     </div>
                 </div>
-                <div className={`flex flex-row-reverse gap-2 px-16 py-8`}>
+
+                <div className={`flex flex-row-reverse items-center grow gap-2 px-16 py-4`}>
                     <button 
                         className={`py-4 w-20`} 
                         disabled={!hasPendingEdits} 

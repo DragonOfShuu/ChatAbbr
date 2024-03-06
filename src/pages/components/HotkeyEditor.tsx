@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styles from './AbbrEditor.module.sass';
 
 import PencilIcon from '@/icons/Pencil.svg';
@@ -10,18 +10,24 @@ import { textAllowed } from "@/globalCharacterRules";
 import { ToolbarButton } from "@/components/ToolbarButton";
 import { useHotkeyContext, useHotkeyDispatchContext } from "../DataStateContext";
 
+const canInstallHotkey = (text: string): boolean => {
+    if (!text) return false
+    if (text.length<2) return false
+    return true;
+}
+
 export const HotkeyEditor = (props: { className?: string; }) => {
     const hotkeyData = useHotkeyContext();
 
     return (
         hotkeyData.currentHotkeyEdit === undefined ? <>No Data Due To Error</> :
             <div 
-                className={`flex flex-col items-stretch rounded-md border-2 border-fuchsia-600 bg-fuchsia-700 bg-opacity-20 ${props.className ?? ''}`}>
+                className={`flex flex-col items-stretch rounded-md border-2 border-fuchsia-400 bg-fuchsia-400 bg-opacity-10 ${props.className ?? ''}`}>
                 
                 {/** toolbar */}
                 <HotkeyToolbar className={`py-2`} />
                 {/** Actual Hotkeys */}
-                <div className={`flex flex-col items-stretch grow overflow-y-scroll`}>
+                <div className={`flex flex-col items-stretch grow overflow-y-auto`}>
                     {hotkeyData.currentHotkeyEdit?.hotkeys.map((h, index, hotkeyArray) => {
                         return (
                             <HotkeyElement text={h} index={index} hotkeyArray={hotkeyArray} />
@@ -38,32 +44,50 @@ const HotkeyToolbar = (props: {className?: string}) => {
 
     const [hotkeyText, setHotkeyText] = useState<string>('')
 
+    const toolBarInput = useRef<HTMLInputElement>(null)
+
     const setAndCheckHotText = useCallback((newText: string) => {
         if (textAllowed(newText))
             setHotkeyText(newText)
     }, [])
 
     const installHotkey = () => {
-        if (!hotkeyData.currentHotkeyEdit 
-            || hotkeyData.currentHotkeyEdit?.hotkeys.includes(hotkeyText)) return 
+        if   ( !hotkeyData.currentHotkeyEdit 
+            || hotkeyData.currentHotkeyEdit?.hotkeys.includes(hotkeyText)
+            || !canInstallHotkey(hotkeyText)) return 
         
         hotkeyDispatch({ 
             type: 'updateCurrentEdit', 
             hotkey: { hotkeys: [hotkeyText, ...hotkeyData.currentHotkeyEdit.hotkeys] } 
         })
+
         setHotkeyText('')
+        toolBarInput.current?.focus()
     }
 
     return (
-        <div className={`flex flex-row gap-2 justify-evenly ${props.className}`}>
+        <div className={`flex flex-row gap-2 justify-evenly px-2 py-1 ${props.className}`}>
             <input 
                 onChange={(e)=> setAndCheckHotText(e.target.value)}
                 value={hotkeyText}
-                className={`rounded-full`}
+                className={`rounded-md grow px-3 py-2 text-lg`}
                 placeholder={`New Hotkey...`}
+                ref={toolBarInput}
+                onKeyDown={(e) => { if (e.key==="Enter") installHotkey() }}
             />
             <ToolbarButton Image={PlusIcon} alt={`Add New Hotkey`} onClick={installHotkey} />
         </div>
+    )
+}
+
+const HotkeyElButton = (props: {className?: string, onClick: ()=>void, image: SVGRType}) => {
+    return (
+        <props.image 
+            width={40} 
+            height={40} 
+            strokeWidth={2} 
+            className={`${props.className??''} select-none cursor-pointer stroke-black hover:stroke-gray-800`} 
+            onClick={props.onClick} />
     )
 }
 
@@ -73,8 +97,6 @@ const HotkeyElement = (props: { text: string; index: number; hotkeyArray: string
 
     const [hotkeyText, setHotkeyText] = useState<string>(props.text);
     const [isEditing, setEditing] = useState<boolean>(false);
-
-    const iconSettings = { stroke: "#000000", width: 50, height: 50, strokeWidth: 2, className: "cursor-pointer hover:stroke-gray-800" };
 
     useEffect(() => {
         setHotkeyText(props.text);
@@ -97,8 +119,14 @@ const HotkeyElement = (props: { text: string; index: number; hotkeyArray: string
 
 
     const installEdits = () => {
-        // If there is no change, don't do anything
-        if (hotkeyText === props.text) return;
+        // If there is no change, stop editing
+        if (hotkeyText === props.text) {
+            setEditing(false);
+            return;
+        }
+
+        if (!canInstallHotkey(hotkeyText)) return
+
         console.log("Installing hotkey edits...");
         dispatch({
             type: 'updateCurrentEdit',
@@ -110,6 +138,7 @@ const HotkeyElement = (props: { text: string; index: number; hotkeyArray: string
                     )
             }
         });
+
         setEditing(false);
     };
 
@@ -124,7 +153,7 @@ const HotkeyElement = (props: { text: string; index: number; hotkeyArray: string
     return (
         <div
             key={props.text}
-            className={`px-4 py-4 h-11 text-xl flex flex-row items-center ${styles.hotkeyContainer} ${props.index % 2 ? styles.hotkeyContainer1 : styles.hotkeyContainer2}`}
+            className={`px-4 py-2 h-16 text-xl flex flex-row items-center ${styles.hotkeyContainer} ${props.index % 2 ? styles.hotkeyContainer2 : styles.hotkeyContainer1}`}
         >
 
             {
@@ -132,22 +161,22 @@ const HotkeyElement = (props: { text: string; index: number; hotkeyArray: string
                 <>
                     <input
                         onChange={inputChanged}
-                        value={hotkeyText} />
+                        value={hotkeyText}
+                        className={`h-full grow px-2 py-1 rounded-md`}
+                        onKeyDown={(e)=> { if (e.key==="Enter") installEdits() }} />
 
-                    <div className={`grow`} />
+                    <div className={`w-2`} />
 
-                    <NoPencilIcon {...iconSettings} onClick={cancelEdits} />
-                    <CheckIcon {...iconSettings} onClick={installEdits} />
+                    <HotkeyElButton image={NoPencilIcon} onClick={cancelEdits} />
+                    <HotkeyElButton image={CheckIcon} onClick={installEdits} />
                 </>
                 :
                 <>
                     {props.text}
                     <div className="grow" />
                     {/** Pencil and x to delete */}
-                    <PencilIcon {...iconSettings} onClick={() => setEditing(true)} />
-                    <div className={`rotate-45`}>
-                        <PlusIcon {...iconSettings} onClick={deleteThis} />
-                    </div>
+                    <HotkeyElButton image={PencilIcon} onClick={() => setEditing(true)} />
+                    <HotkeyElButton image={PlusIcon} onClick={deleteThis} className={`rotate-45`} />
                 </>
             }
         </div>
