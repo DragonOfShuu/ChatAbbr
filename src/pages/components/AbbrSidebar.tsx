@@ -11,7 +11,7 @@ import PlusIcon from "@/icons/plusIcon.svg"
 import FloppyDisk from "@/icons/FloppyDisk.svg";
 import { DialogInfoType } from "@/components/Dialog";
 import BooleanDialog from "@/components/BooleanDialog";
-import { ToolbarButton } from "../../components/SpecialButton";
+import SpecialButton from "../../components/SpecialButton";
 
 // @ts-ignore
 const selectedContext = createContext<{selected: string[], setSelected: (ids: string[])=>any}>(null) 
@@ -127,8 +127,8 @@ const SidebarToolbar = () => {
 
                 {`Are you sure you want to delete ${selected.length} template(s)?`}
             </BooleanDialog>
-            <ToolbarButton alt="Add Template" Image={PlusIcon} onClick={addTemplate} />
-            <ToolbarButton alt="Remove Templates" Image={TrashIcon} onClick={removeTemplateDialog} disabled={selected.length===0} />
+            <SpecialButton alt="Add Template" Image={PlusIcon} onClick={addTemplate} />
+            <SpecialButton alt="Remove Templates" Image={TrashIcon} onClick={removeTemplateDialog} disabled={selected.length===0} />
         </div>
     )
 }

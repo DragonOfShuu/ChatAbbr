@@ -1,6 +1,8 @@
 import { ReactNode, useEffect, useRef } from 'react'
 import styles from './Dialog.module.sass'
 import plusIcon from '@/icons/plusIcon.svg'
+import SvgButton from './SvgButton'
+import SpecialButton from './SpecialButton'
 
 export type dialogFunc = undefined|((e: React.MouseEvent<Element, MouseEvent>, data?: any) => boolean | void | undefined)
 export type DialogInfoType = {open: boolean, data?: any}
@@ -43,7 +45,7 @@ const Dialog = ({dialogInfo: {info, setInfo}, ...props}: DialogProps) => {
             <div className={`flex flex-col gap-2 items-stretch ${props.className??''}`}>
                 <div className='h-3 flex flex-row'>
                     <div className={`grow`} />
-                    <TopBarButton src={plusIcon} alt="Exit Dialog" onClick={()=>dialogRef.current?.close()} className={`rotate-45`} />
+                    <SvgButton image={plusIcon} onClick={()=>dialogRef.current?.close()} className={`rotate-45`} />
                 </div>
                 <div className={`grow p-10 flex flex-col gap-10`}>
                     <div className='grow text-2xl'>
@@ -52,25 +54,15 @@ const Dialog = ({dialogInfo: {info, setInfo}, ...props}: DialogProps) => {
                     <div className={`flex flex-row justify-evenly`}> {/* TODO: Make buttons go in center and spread out */}
                         {
                             props.buttons?.map((buttonData, index)=>(
-                                <button onClick={(e)=> buttonClicked(e, buttonData.func)} key={index} className='py-2 text-lg'>
+                                <SpecialButton onClick={(e)=> buttonClicked(e, buttonData.func)} key={index} className='py-2 text-lg'>
                                     {buttonData.text}
-                                </button>
+                                </SpecialButton>
                             ))
                         }
                     </div>
                 </div>
             </div>
         </dialog>
-    )
-}
-
-export const TopBarButton = (props: {src: any, alt: string, onClick: (e: React.MouseEvent)=>any, className: string}) => {
-    return (
-        <img 
-            src={props.src} 
-            alt={props.alt} 
-            className={`stroke-black opacity-40 hover:opacity-60 cursor-pointer ${props.className}`} 
-            onClick={props.onClick} />
     )
 }
 

@@ -77,7 +77,7 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
             let newHotkey: AbbrType = {
                 id: id,
                 hotkeys: ["-hw"],
-                name: "New Hotkey",
+                name: "New Template",
                 output: "Hello World! (Thankfully not homework)",
                 options: {}
             }

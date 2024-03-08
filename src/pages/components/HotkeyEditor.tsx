@@ -7,7 +7,8 @@ import PlusIcon from '@/icons/plusIcon.svg';
 import CheckIcon from '@/icons/Check.svg';
 
 import { textAllowed } from "@/globalCharacterRules";
-import { ToolbarButton } from "@/components/SpecialButton";
+import SpecialButton from "@/components/SpecialButton";
+import SvgButton from "@/components/SvgButton";
 import { useHotkeyContext, useHotkeyDispatchContext } from "../DataStateContext";
 
 const canInstallHotkey = (text: string): boolean => {
@@ -75,21 +76,21 @@ const HotkeyToolbar = (props: {className?: string}) => {
                 ref={toolBarInput}
                 onKeyDown={(e) => { if (e.key==="Enter") installHotkey() }}
             />
-            <ToolbarButton Image={PlusIcon} alt={`Add New Hotkey`} onClick={installHotkey} />
+            <SpecialButton Image={PlusIcon} alt={`Add New Hotkey`} onClick={installHotkey} />
         </div>
     )
 }
 
-const HotkeyElButton = (props: {className?: string, onClick: ()=>void, image: SVGRType}) => {
-    return (
-        <props.image 
-            width={40} 
-            height={40} 
-            strokeWidth={2} 
-            className={`${props.className??''} select-none cursor-pointer stroke-black hover:stroke-gray-800`} 
-            onClick={props.onClick} />
-    )
-}
+// const HotkeyElButton = (props: {className?: string, onClick: ()=>void, image: SVGRType}) => {
+//     return (
+//         <props.image 
+//             width={40} 
+//             height={40} 
+//             strokeWidth={2} 
+//             className={`${props.className??''} select-none cursor-pointer stroke-black hover:stroke-gray-800`} 
+//             onClick={props.onClick} />
+//     )
+// }
 
 const HotkeyElement = (props: { text: string; index: number; hotkeyArray: string[]; }) => {
     const hotkeyData = useHotkeyContext();
@@ -167,16 +168,16 @@ const HotkeyElement = (props: { text: string; index: number; hotkeyArray: string
 
                     <div className={`w-2`} />
 
-                    <HotkeyElButton image={NoPencilIcon} onClick={cancelEdits} />
-                    <HotkeyElButton image={CheckIcon} onClick={installEdits} />
+                    <SvgButton image={NoPencilIcon} onClick={cancelEdits} />
+                    <SvgButton image={CheckIcon} onClick={installEdits} />
                 </>
                 :
                 <>
                     {props.text}
                     <div className="grow" />
                     {/** Pencil and x to delete */}
-                    <HotkeyElButton image={PencilIcon} onClick={() => setEditing(true)} /> 
-                    <HotkeyElButton image={PlusIcon} onClick={deleteThis} className={`rotate-45`} />
+                    <SvgButton image={PencilIcon} onClick={() => setEditing(true)} /> 
+                    <SvgButton image={PlusIcon} onClick={deleteThis} className={`rotate-45`} />
                 </>
             }
         </div>

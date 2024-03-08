@@ -1,13 +1,13 @@
 import { ReactNode } from 'react';
 import styles from './SpecialButton.module.sass'
 
-export const ToolbarButton = (
+const SpecialButton = (
     props: { 
-        onClick: () => any, 
+        onClick: (e: React.MouseEvent) => any, 
         Image?: SVGRType, 
         children?: ReactNode
         disabled?: boolean, 
-        alt: string, 
+        alt?: string, // Note that alt is not currently used
         className?: string, 
         imageClassName?: string,
         width?: number,
@@ -19,7 +19,7 @@ export const ToolbarButton = (
         const height = props.scale??props.height??defaultSize
 
         return (
-            <button className={`${props.className??''} ${styles.button} p-1`} disabled={props.disabled} onClick={props.onClick}>
+            <button className={`${props.className??''} ${styles.button}`} disabled={props.disabled} onClick={props.onClick}>
                 {
                     props.Image?
                         <props.Image width={width} height={height} stroke="#ffffff" />
@@ -28,3 +28,5 @@ export const ToolbarButton = (
             </button>
         );
 };
+
+export default SpecialButton

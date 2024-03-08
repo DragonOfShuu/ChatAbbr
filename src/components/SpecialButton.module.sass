@@ -2,7 +2,7 @@
     border-radius: 4px
     transition: background-color 0.2s
     
-    @apply px-4 bg-pink-600 text-white
+    @apply px-4 bg-pink-600 text-white border-pink-500 border-2
 
     &:hover
         @apply bg-pink-500
@@ -11,4 +11,7 @@
         @apply bg-pink-700
     
     &:disabled
-        @apply bg-pink-100
+        @apply bg-pink-200
+
+    &:has(svg), &:has(img)
+        padding: 4px

@@ -1,6 +1,6 @@
 
 type SvgButtonProps = {
-    onClick: ()=> any,
+    onClick: (e: React.MouseEvent)=> any,
     className?: string,
     svgClassName?: string,
     image: SVGRType,
@@ -20,7 +20,7 @@ const SvgButton = (props: SvgButtonProps) => {
                 width={width} 
                 height={height} 
                 strokeWidth={2} 
-                className={`${props.svgClassName??''} select-none cursor-pointer stroke-black hover:stroke-gray-800`} 
+                className={`${props.svgClassName??''} stroke-black hover:stroke-gray-800`} 
                 onClick={props.onClick} />
         </button>
     )
