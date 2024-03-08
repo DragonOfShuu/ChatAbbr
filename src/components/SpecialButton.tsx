@@ -1,9 +1,11 @@
-
+import { ReactNode } from 'react';
+import styles from './SpecialButton.module.sass'
 
 export const ToolbarButton = (
     props: { 
         onClick: () => any, 
-        Image: SVGRType, 
+        Image?: SVGRType, 
+        children?: ReactNode
         disabled?: boolean, 
         alt: string, 
         className?: string, 
@@ -17,8 +19,12 @@ export const ToolbarButton = (
         const height = props.scale??props.height??defaultSize
 
         return (
-            <button className={`p-1`} disabled={props.disabled} onClick={props.onClick}>
-                <props.Image width={width} height={height} stroke="#ffffff" />
+            <button className={`${props.className??''} ${styles.button} p-1`} disabled={props.disabled} onClick={props.onClick}>
+                {
+                    props.Image?
+                        <props.Image width={width} height={height} stroke="#ffffff" />
+                    : props.children
+                }
             </button>
         );
 };

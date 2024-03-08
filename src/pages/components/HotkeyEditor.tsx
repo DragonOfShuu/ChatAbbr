@@ -7,7 +7,7 @@ import PlusIcon from '@/icons/plusIcon.svg';
 import CheckIcon from '@/icons/Check.svg';
 
 import { textAllowed } from "@/globalCharacterRules";
-import { ToolbarButton } from "@/components/ToolbarButton";
+import { ToolbarButton } from "@/components/SpecialButton";
 import { useHotkeyContext, useHotkeyDispatchContext } from "../DataStateContext";
 
 const canInstallHotkey = (text: string): boolean => {
@@ -30,7 +30,7 @@ export const HotkeyEditor = (props: { className?: string; }) => {
                 <div className={`flex flex-col items-stretch grow overflow-y-auto`}>
                     {hotkeyData.currentHotkeyEdit?.hotkeys.map((h, index, hotkeyArray) => {
                         return (
-                            <HotkeyElement text={h} index={index} hotkeyArray={hotkeyArray} />
+                            <HotkeyElement text={h} index={index} hotkeyArray={hotkeyArray} key={h} />
                         );
                     })}
                 </div>
@@ -175,7 +175,7 @@ const HotkeyElement = (props: { text: string; index: number; hotkeyArray: string
                     {props.text}
                     <div className="grow" />
                     {/** Pencil and x to delete */}
-                    <HotkeyElButton image={PencilIcon} onClick={() => setEditing(true)} />
+                    <HotkeyElButton image={PencilIcon} onClick={() => setEditing(true)} /> 
                     <HotkeyElButton image={PlusIcon} onClick={deleteThis} className={`rotate-45`} />
                 </>
             }

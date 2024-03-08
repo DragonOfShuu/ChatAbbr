@@ -11,7 +11,7 @@ import PlusIcon from "@/icons/plusIcon.svg"
 import FloppyDisk from "@/icons/FloppyDisk.svg";
 import { DialogInfoType } from "@/components/Dialog";
 import BooleanDialog from "@/components/BooleanDialog";
-import { ToolbarButton } from "../../components/ToolbarButton";
+import { ToolbarButton } from "../../components/SpecialButton";
 
 // @ts-ignore
 const selectedContext = createContext<{selected: string[], setSelected: (ids: string[])=>any}>(null) 
@@ -54,11 +54,6 @@ const SideBarContent = (props: {}) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const checkmarkClicked = (isChecked: boolean, id: string) => {
-        if (isChecked) setSelected([...selected, id])
-        else setSelected([...selected.filter((inId)=> inId!==id)])
-    }
-
     const switchCurrentEdit = (id: string) => {
         let newData: AbbrType|undefined = hotkeyContext.hasEdits[id]
         if (newData===undefined)
@@ -90,33 +85,14 @@ const SideBarContent = (props: {}) => {
                 </div>
                 : // There are templates
                 hotkeyListDisplay.map((hotkey)=> {
-                    // If the id is the same as the currently being edited, use the current edited information instead
-                    let needSaveIcon = true;
-                    let actualHotkey = hotkeyContext.hasEdits[hotkey.id]
-                    if (actualHotkey===undefined) {
-                        actualHotkey = hotkey
-                        needSaveIcon = false;
-                    }
-
-                    let hotkeyText = `${actualHotkey.name} (${actualHotkey.hotkeys.join(', ')})`
 
                     return (
-                        <div 
-                        className="bg-white bg-opacity-0 hover:bg-opacity-20 active:bg-black active:bg-opacity-10 text-lg font-bold flex flex-row gap-5 h-20 items-center cursor-pointer w-full max-w-full overflow-hidden"
-                        key={actualHotkey.id}
-                        onClick={()=> abbrClicked(actualHotkey.id)}>
-                            <input 
-                                type="checkbox" 
-                                onChange={(x)=> checkmarkClicked(x.target.checked, actualHotkey.id)} 
-                                checked={selected.includes(actualHotkey.id)} />
-                            <div className={`flex flex-row py-5 h-full w-full max-w-full items-center`}>
-                                <p className="overflow-ellipsis overflow-hidden whitespace-nowrap max-w-[250px] min-w-0">
-                                    {hotkeyText}
-                                </p>
-                                <div className={`grow`} />
-                                { needSaveIcon?<FloppyDisk className={`h-full w-auto opacity-30 hover:opacity-60`} onClick={()=> hotkeyDispatchContext({type: 'saveEdits', id: actualHotkey.id})} stroke={`#e11d48`} /> : <></> }
-                            </div>
-                        </div>
+                        <SidebarElement 
+                            key={hotkey.id} 
+                            hotkey={hotkey} 
+                            onClick={()=> abbrClicked(hotkey.id)}
+                            selected={selected}
+                            setSelected={setSelected} />
                     )
                 })
             }
@@ -157,5 +133,46 @@ const SidebarToolbar = () => {
     )
 }
 
+const SidebarElement = ({hotkey, onClick, selected, setSelected}: {hotkey: AbbrType, onClick: ()=>any, selected: string[], setSelected: (value: string[])=>any}) => {
+    const hotkeyContext = useHotkeyContext();
+    const hotkeyDispatch = useHotkeyDispatchContext();
+
+    const checkmarkClicked = (isChecked: boolean, id: string) => {
+        if (isChecked) setSelected([...selected, id])
+        else setSelected([...selected.filter((inId)=> inId!==id)])
+    }
+
+    // If the id is the same as the currently being edited, use the current edited information instead
+    let needSaveIcon = true;
+    let actualHotkey = hotkeyContext.hasEdits[hotkey.id]
+    if (actualHotkey===undefined) {
+        actualHotkey = hotkey
+        needSaveIcon = false;
+    }
+
+    let hotkeyText = `${actualHotkey.name} (${actualHotkey.hotkeys.join(', ')})`
+
+    return (
+        <div 
+        className="bg-white bg-opacity-0 hover:bg-opacity-20 active:bg-black active:bg-opacity-10 text-lg font-bold flex flex-row gap-5 h-20 items-center cursor-pointer w-full max-w-full overflow-hidden"
+        key={actualHotkey.id}
+        onClick={onClick}>
+            <div className={`flex flex-col justify-between`}>
+                <input 
+                    type="checkbox" 
+                    onChange={(x)=> checkmarkClicked(x.target.checked, actualHotkey.id)} 
+                    checked={selected.includes(actualHotkey.id)} />
+            </div>
+
+            <div className={`flex flex-row py-5 h-full w-full max-w-full items-center`}>
+                <p className="overflow-ellipsis overflow-hidden whitespace-nowrap max-w-[250px] min-w-0">
+                    {hotkeyText}
+                </p>
+                <div className={`grow`} />
+                { needSaveIcon?<FloppyDisk className={`h-full w-auto opacity-30 hover:opacity-60`} onClick={()=> hotkeyDispatch({type: 'saveEdits', id: actualHotkey.id})} stroke={`#e11d48`} /> : <></> }
+            </div>
+        </div>
+    )
+}
 
 export default AbbrSidebar
