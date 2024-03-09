@@ -13,7 +13,7 @@ const Root = (props: Props) => {
         <div className={`absolute inset-0`} >
             <ErrorBoundary fallbackRender={AppErrorScreen}>
                 <HotkeyDataContext>
-                    <AbbrSidebar className='w-96' />
+                    <AbbrSidebar className='w-96 max-w-96' />
 
                     <AbbrEditor className='pl-96' />
                 </HotkeyDataContext>

@@ -13,6 +13,8 @@ import { DialogInfoType } from "@/components/Dialog";
 import BooleanDialog from "@/components/BooleanDialog";
 import SpecialButton from "../../components/SpecialButton";
 
+import styles from './AbbrSidebar.module.sass'
+
 // @ts-ignore
 const selectedContext = createContext<{selected: string[], setSelected: (ids: string[])=>any}>(null) 
 
@@ -21,15 +23,17 @@ const AbbrSidebar = (props: { className: string }) => {
 
     return (
         <selectedContext.Provider value={{selected: selected, setSelected: setSelected}}>
-            <div className={`${props.className??''} min-h-screen bg-fuchsia-200 fixed flex flex-col p-2`}>
-                <h1 className="text-6xl">
-                    Paradigm
-                </h1>
+            <div className={`${props.className??''} min-h-screen h-screen w-full bg-fuchsia-200 fixed flex flex-col`}>
+                <div className={`p-2 flex flex-col grow w-full`}>
+                    <h1 className="text-6xl">
+                        Paradigm
+                    </h1>
+                    <SidebarToolbar className={`grow`} />
+                </div>
 
-                <SidebarToolbar />
-                <SideBarContent />
+                <SideBarContent className={`h-3/4 w-full`} />
                 
-                <div>
+                <div className={`p-2 w-full`}>
                     <a href="https://dragonofshuu.dev/" target="_blank" rel="noopener noreferrer">
                         {`Made with <3 by Logan Cederlof`}
                     </a>
@@ -39,7 +43,7 @@ const AbbrSidebar = (props: { className: string }) => {
     )
 }
 
-const SideBarContent = (props: {}) => {
+const SideBarContent = (props: {className?: string}) => {
     const hotkeyContext = useHotkeyContext();
     const hotkeyDispatchContext = useHotkeyDispatchContext();
     const {selected, setSelected} = useContext(selectedContext)
@@ -76,7 +80,7 @@ const SideBarContent = (props: {}) => {
     const hotkeyListDisplay = Object.values(hotkeyContext.hotkeyList)
     
     return (
-        <div className={`flex flex-col grow items-stretch`}>
+        <div className={`flex flex-col grow items-stretch ${props.className??''} ${styles.contentNoScroll}`}>
             {
                 hotkeyListDisplay.length===0
                 ? // No templates
@@ -100,7 +104,7 @@ const SideBarContent = (props: {}) => {
     )
 }
 
-const SidebarToolbar = () => {
+const SidebarToolbar = (props: {className?: string}) => {
     const hotkeyDispatchContext = useHotkeyDispatchContext();
     const {selected, setSelected} = useContext(selectedContext)
     const [dialogInfo, setDialogInfo] = useState<DialogInfoType>({open: false, data: {}})
@@ -120,7 +124,7 @@ const SidebarToolbar = () => {
     }
 
     return (
-        <div className={`pt-8 pb-2 flex flex-row items-end gap-2`}>
+        <div className={`pt-8 pb-2 flex flex-row items-end gap-2 ${props.className??''}`}>
             <BooleanDialog 
                 dialogInfo={{info: dialogInfo, setInfo: setDialogInfo}} 
                 noFunc={()=>true} yesFunc={removeTemplates}>
@@ -150,11 +154,14 @@ const SidebarElement = ({hotkey, onClick, selected, setSelected}: {hotkey: AbbrT
         needSaveIcon = false;
     }
 
+    // This element is being edited
+    const isCurrentEdit = hotkey.id === hotkeyContext.currentHotkeyEdit?.id
+
     let hotkeyText = `${actualHotkey.name} (${actualHotkey.hotkeys.join(', ')})`
 
     return (
         <div 
-        className="bg-white bg-opacity-0 hover:bg-opacity-20 active:bg-black active:bg-opacity-10 text-lg font-bold flex flex-row gap-5 h-20 items-center cursor-pointer w-full max-w-full overflow-hidden"
+        className={`${styles.sidebarElement} ${isCurrentEdit?styles.sidebarElementSelected:''}`}
         key={actualHotkey.id}
         onClick={onClick}>
             <div className={`flex flex-col justify-between`}>

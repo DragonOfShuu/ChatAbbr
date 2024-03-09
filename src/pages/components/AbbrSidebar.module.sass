@@ -1,4 +1,35 @@
+.contentNoScroll
+    -ms-overflow-style: none
+    scrollbar-width: none
 
-// .abbrTextGrid
-//     display: grid
-//     grid-template-columns: 80% auto
+    @apply overflow-y-scroll
+
+    &::-webkit-scrollbar
+        display: none
+
+.sidebarElement
+    display: flex
+    flex-direction: row
+    align-items: center
+    cursor: cursor-pointer
+
+    border-radius: 0 10px 10px 0
+    border-style: solid
+    border-width: 2px
+    border-color: transparent
+    transition: border-color 0.5s
+
+    width: 100%
+    max-width: 100%
+    overflow: hidden
+
+    @apply bg-white bg-opacity-0 text-lg font-bold gap-5 min-h-20
+
+    &:hover
+        @apply bg-opacity-20
+
+    &:active
+        @apply bg-black bg-opacity-10
+
+.sidebarElementSelected
+    border-color: rgba(192,38,211,1)
