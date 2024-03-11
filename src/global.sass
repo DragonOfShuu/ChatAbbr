@@ -6,6 +6,37 @@ body
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
     @apply text-fuchsia-950 bg-fuchsia-100
 
+*
+  &::-webkit-scrollbar 
+      position: fixed
+      width: 10px
+
+
+  &::-webkit-scrollbar-thumb 
+      background-color: theme("colors.fuchsia.400")
+      border-radius: 5px
+
+
+  &::-webkit-scrollbar-thumb:hover 
+      background-color: theme("colors.fuchsia.300")
+
+
+  &::-webkit-scrollbar-track 
+    opacity: 0
+
+/* Selection */
+::-moz-selection 
+    color: white
+    background: theme("colors.fuchsia.500")
+
+::-webkit-selection 
+    color: white
+    background: theme("colors.fuchsia.500")
+
+::selection 
+    color: white
+    background: theme("colors.fuchsia.500")
+
 h1,h2,h3,h4,h5,h6
     @apply font-bold
 
