@@ -1,12 +1,13 @@
-
 type SvgButtonProps = {
     onClick: (e: React.MouseEvent)=> any,
     className?: string,
     svgClassName?: string,
+    strokeClasses?: string,
     image: SVGRType,
     width?: number,
     height?: number,
     scale?: number,
+    strokeWidth?: number,
 }
 
 const SvgButton = (props: SvgButtonProps) => {
@@ -19,8 +20,8 @@ const SvgButton = (props: SvgButtonProps) => {
             <props.image 
                 width={width} 
                 height={height} 
-                strokeWidth={2} 
-                className={`${props.svgClassName??''} stroke-black hover:stroke-gray-800`} 
+                strokeWidth={props.strokeWidth??2} 
+                className={`${props.svgClassName??''} ${props.strokeClasses??'stroke-black hover:stroke-rose-600'}`} 
                 onClick={props.onClick} />
         </button>
     )

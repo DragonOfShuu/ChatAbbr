@@ -13,7 +13,7 @@ export type HotkeyAction =
     | { type: 'create' }
     | { type: 'remove', ids: string[] }
     | { type: 'change', replacement: AbbrType }
-    | { type: 'setHotkeys', hotkeys: AbbrType[] }
+    | { type: 'setHotkeys', hotkeys: AbbrType[]|{ [id: string]: AbbrType } }
     | { type: 'changeEdits', hotkey: AbbrType }
     | { type: 'discardEdits', ids: string[] }
     | { type: 'changeSelection', id: string }
@@ -122,9 +122,14 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
 
         
         case "setHotkeys": // Set entire hotkey list
-            const hotkeyObject: {[id: string]: AbbrType} = {}
-            action.hotkeys.forEach((h)=> hotkeyObject[h.id] = h)
-            newState.hotkeyList = hotkeyObject
+            if (!Array.isArray(action.hotkeys)) 
+                newState.hotkeyList = action.hotkeys
+            else {
+                const hotkeyObject: {[id: string]: AbbrType} = {}
+                action.hotkeys.forEach((h)=> hotkeyObject[h.id] = h)
+                newState.hotkeyList = hotkeyObject
+            }
+            
             return newState
 
         

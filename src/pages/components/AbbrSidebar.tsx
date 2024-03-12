@@ -9,11 +9,14 @@ import TrashIcon from "@/icons/TrashIcon.svg"
 import PlusIcon from "@/icons/plusIcon.svg"
 // import saveIcon from "@/icons/FloppyDisk.svg"
 import FloppyDisk from "@/icons/FloppyDisk.svg";
+import sortDown from "@/icons/sortDown.svg"
+import sortUp from '@/icons/sortUp.svg'
 import { DialogInfoType } from "@/components/Dialog";
 import BooleanDialog from "@/components/BooleanDialog";
 import SpecialButton from "../../components/SpecialButton";
 
 import styles from './AbbrSidebar.module.sass'
+import SvgButton from "@/components/SvgButton";
 
 // @ts-ignore
 const selectedContext = createContext<{selected: string[], setSelected: (ids: string[])=>any}>(null) 
@@ -159,24 +162,46 @@ const SidebarElement = ({hotkey, onClick, selected, setSelected}: {hotkey: AbbrT
 
     let hotkeyText = `${actualHotkey.name} (${actualHotkey.hotkeys.join(', ')})`
 
+    const moveElement = (moveUp: boolean) => {
+        const oldHotkeyList = Object.values(hotkeyContext.hotkeyList);
+        const oldIndex = oldHotkeyList.findIndex((oldHotkey) => hotkey.id===oldHotkey.id);
+        const newIndex = oldIndex + (moveUp?-1:1)
+
+        const newHotkeyList = [...oldHotkeyList]
+        newHotkeyList.splice(oldIndex, 1)
+        newHotkeyList.splice(newIndex, 0, hotkey)
+
+        hotkeyDispatch({ type: 'setHotkeys', hotkeys: newHotkeyList })
+    }
+
     return (
         <div 
         className={`${styles.sidebarElement} ${isCurrentEdit?styles.sidebarElementSelected:''}`}
         key={actualHotkey.id}
         onClick={onClick}>
-            <div className={`flex flex-col justify-between`}>
+            <div className={`flex flex-col justify-center w-1/12 items-center py-3`}>
+                <SvgButton image={sortUp} onClick={()=> moveElement(true)} svgClassName={`w-full h-auto`} strokeWidth={1} />
                 <input 
                     type="checkbox" 
                     onChange={(x)=> checkmarkClicked(x.target.checked, actualHotkey.id)} 
                     checked={selected.includes(actualHotkey.id)} />
+                <SvgButton image={sortDown} onClick={()=> moveElement(false)} svgClassName={`w-full h-auto`} strokeWidth={1} />
             </div>
 
-            <div className={`flex flex-row py-5 h-full w-full max-w-full items-center`}>
+            {/* ClassName alternatively contains w-full instead of grow */}
+            <div className={`flex flex-row py-5 h-full grow max-w-full items-center`}>
                 <p className="overflow-ellipsis overflow-hidden whitespace-nowrap max-w-[250px] min-w-0">
                     {hotkeyText}
                 </p>
                 <div className={`grow`} />
-                { needSaveIcon?<FloppyDisk className={`h-full w-auto opacity-30 hover:opacity-60`} onClick={()=> hotkeyDispatch({type: 'saveEdits', id: actualHotkey.id})} stroke={`#e11d48`} /> : <></> }
+                { 
+                    needSaveIcon?
+                        <SvgButton 
+                            image={FloppyDisk} 
+                            onClick={()=> hotkeyDispatch({type: 'saveEdits', id: actualHotkey.id})}
+                            strokeClasses={`h-full w-auto stroke-fuchsia-500 hover:stroke-fuchsia-400`} /> 
+                        : <></> 
+                }
             </div>
         </div>
     )
