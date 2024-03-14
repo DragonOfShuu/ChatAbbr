@@ -9,7 +9,7 @@ import CheckIcon from '@/icons/Check.svg';
 import { textAllowed } from "@/globalCharacterRules";
 import SpecialButton from "@/components/SpecialButton";
 import SvgButton from "@/components/SvgButton";
-import { useHotkeyContext, useHotkeyDispatchContext } from "../DataStateContext";
+import { useHotkeyContext, useHotkeyDispatchContext } from "../HotkeyDataContext";
 
 const canInstallHotkey = (text: string): boolean => {
     if (!text) return false

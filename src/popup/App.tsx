@@ -1,5 +1,6 @@
+import SvgButton from '@/components/SvgButton';
 import './App.sass';
-import Gear from './gear.svg';
+import Gear from '@/icons/gear.svg';
 
 function App() {
     const onSettingsClick = () => {
@@ -11,7 +12,7 @@ function App() {
             Paradigm
             <div className="flex flex-row">
                 {/* <img src={Gear} alt='Settings' width={50} height={50} onClick={onSettingsClick} /> */}
-                <Gear width={50} height={50} onClick={onSettingsClick} />
+                <SvgButton scale={50} image={Gear} onClick={onSettingsClick} />
             </div>
         </div>
     );

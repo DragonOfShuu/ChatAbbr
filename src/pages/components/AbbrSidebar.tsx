@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react"
 import LoadingComp from "./Loading";
 import { AbbrType, getAbbrList } from "@/database/abbrAPI";
 // import { getAbbrList } from "@/";
-import { useHotkeyContext, useHotkeyDispatchContext } from "../DataStateContext";
+import { useHotkeyContext, useHotkeyDispatchContext } from "../HotkeyDataContext";
 
 // import minusIcon from "icons/minus.svg"
 import TrashIcon from "@/icons/TrashIcon.svg"

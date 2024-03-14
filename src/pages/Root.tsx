@@ -1,5 +1,5 @@
 import AbbrSidebar from './components/AbbrSidebar';
-import HotkeyDataContext from './DataStateContext';
+import HotkeyDataContext from './HotkeyDataContext';
 import AbbrEditor from './components/AbbrEditor';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 

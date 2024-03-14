@@ -1,4 +1,4 @@
-import { useHotkeyContext, useHotkeyDispatchContext } from "../DataStateContext"
+import { useHotkeyContext, useHotkeyDispatchContext } from "../HotkeyDataContext"
 import { HotkeyEditor } from "./HotkeyEditor"
 import SpecialButton from "@/components/SpecialButton"
 
@@ -29,6 +29,7 @@ const AbbrEditor = (props: Props) => {
                         type={`text`} 
                         className={`w-full h-12 text-5xl border-fuchsia-500 rounded-lg text-fuchsia-700 border-b-2 bg-transparent`}
                         placeholder="Name" 
+                        autoComplete={`off`}
                         onChange={(e)=> hotkeyDataDispatch({type: 'updateCurrentEdit', hotkey: {name: e.currentTarget.value}})}
                         value={hotkeyData.currentHotkeyEdit.name} /> 
 
