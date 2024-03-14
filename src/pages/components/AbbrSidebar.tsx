@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react"
-import LoadingComp from "./Loading";
+import LoadingComp from "@/components/Loading";
 import { AbbrType, getAbbrList } from "@/database/abbrAPI";
 // import { getAbbrList } from "@/";
 import { useHotkeyContext, useHotkeyDispatchContext } from "../HotkeyDataContext";
@@ -9,6 +9,7 @@ import TrashIcon from "@/icons/TrashIcon.svg"
 import PlusIcon from "@/icons/plusIcon.svg"
 // import saveIcon from "@/icons/FloppyDisk.svg"
 import FloppyDisk from "@/icons/FloppyDisk.svg";
+import GearIcon from '@/icons/gear.svg';
 import sortDown from "@/icons/sortDown.svg"
 import sortUp from '@/icons/sortUp.svg'
 import { DialogInfoType } from "@/components/Dialog";
@@ -17,20 +18,27 @@ import SpecialButton from "../../components/SpecialButton";
 
 import styles from './AbbrSidebar.module.sass'
 import SvgButton from "@/components/SvgButton";
+import SettingsDialog from "./SettingsDialog";
 
 // @ts-ignore
 const selectedContext = createContext<{selected: string[], setSelected: (ids: string[])=>any}>(null) 
 
 const AbbrSidebar = (props: { className: string }) => {
     const [selected, setSelected] = useState<string[]>([])
+    const [settingsOpen, setSettingsOpen] = useState<boolean>(false)
 
     return (
         <selectedContext.Provider value={{selected: selected, setSelected: setSelected}}>
-            <div className={`${props.className??''} min-h-screen h-screen w-full bg-fuchsia-200 fixed flex flex-col`}>
+            <SettingsDialog openState={{open: settingsOpen, setOpen: setSettingsOpen}} />
+            <div className={`${props.className??''} min-h-screen h-screen w-full bg-fuchsia-200 fixed flex flex-col rounded-tr-2xl`}>
                 <div className={`p-2 flex flex-col grow w-full`}>
-                    <h1 className="text-6xl">
-                        Paradigm
-                    </h1>
+                    <div className={`w-full flex flex-row`}>
+                        <h1 className="text-6xl">
+                            Paradigm
+                        </h1>
+                        <div className={`grow`} />
+                        <SvgButton image={GearIcon} onClick={()=> setSettingsOpen(true)} className={`self-start`} scale={30} />
+                    </div>
                     <SidebarToolbar className={`grow`} />
                 </div>
 

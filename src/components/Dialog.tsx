@@ -51,15 +51,20 @@ const Dialog = ({dialogInfo: {info, setInfo}, ...props}: DialogProps) => {
                     <div className='grow text-2xl'>
                         {props.children}
                     </div>
-                    <div className={`flex flex-row justify-evenly`}> {/* TODO: Make buttons go in center and spread out */}
-                        {
-                            props.buttons?.map((buttonData, index)=>(
-                                <SpecialButton onClick={(e)=> buttonClicked(e, buttonData.func)} key={index} className='py-2 text-lg'>
-                                    {buttonData.text}
-                                </SpecialButton>
-                            ))
-                        }
-                    </div>
+                    {
+                        props.buttons?
+                            <div className={`flex flex-row justify-evenly`}> 
+                                {
+                                    props.buttons?.map((buttonData, index)=>(
+                                        <SpecialButton onClick={(e)=> buttonClicked(e, buttonData.func)} key={index} className='py-2 text-lg'>
+                                            {buttonData.text}
+                                        </SpecialButton>
+                                    ))
+                                }
+                            </div>
+                            :
+                            <></>
+                    }
                 </div>
             </div>
         </dialog>

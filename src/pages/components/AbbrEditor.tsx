@@ -23,32 +23,33 @@ const AbbrEditor = (props: Props) => {
     
     return (
         <div className={`${props.className} w-full h-full`}>
-            <div className="flex flex-col gap-5 w-full h-full">
-                <div className={`flex flex-col gap-5 w-full h-full p-5`}>
-                    <input 
-                        type={`text`} 
-                        className={`w-full h-12 text-5xl border-fuchsia-500 rounded-lg text-fuchsia-700 border-b-2 bg-transparent`}
-                        placeholder="Name" 
-                        autoComplete={`off`}
-                        onChange={(e)=> hotkeyDataDispatch({type: 'updateCurrentEdit', hotkey: {name: e.currentTarget.value}})}
-                        value={hotkeyData.currentHotkeyEdit.name} /> 
+            <div className="flex flex-col w-full h-full">
+                <div className={`w-full h-full bg-fuchsia-200`}>
+                    <div className={`flex flex-col gap-5 w-full h-full p-5 bg-fuchsia-100 rounded-bl-2xl`}>
+                        <input 
+                            type={`text`} 
+                            className={`w-full h-12 text-5xl border-fuchsia-500 rounded-lg text-fuchsia-700 border-b-2 bg-transparent`}
+                            placeholder="Name" 
+                            onChange={(e)=> hotkeyDataDispatch({type: 'updateCurrentEdit', hotkey: {name: e.currentTarget.value}})}
+                            value={hotkeyData.currentHotkeyEdit.name} /> 
 
-                    <div className={`h-[70vh] px-16 py-5 flex flex-row gap-3`}>
-                        <div className={`w-1/3 h-full`}>
-                            {/* Box for all hotkeys */}
-                            <HotkeyEditor className={`h-full max-h-full`} />
-                        </div>
-                        <div className={`w-1/2 grow`}>
-                            <textarea 
-                                value={hotkeyData.currentHotkeyEdit.output} 
-                                onChange={(e)=> hotkeyDataDispatch({type: 'updateCurrentEdit', hotkey: {output: e.currentTarget.value}})} 
-                                className="w-full h-full text-xl"
-                                placeholder="Output Text"/>
+                        <div className={`h-[70vh] px-16 py-5 flex flex-row gap-3`}>
+                            <div className={`w-1/3 h-full`}>
+                                {/* Box for all hotkeys */}
+                                <HotkeyEditor className={`h-full max-h-full`} />
+                            </div>
+                            <div className={`w-1/2 grow`}>
+                                <textarea 
+                                    value={hotkeyData.currentHotkeyEdit.output} 
+                                    onChange={(e)=> hotkeyDataDispatch({type: 'updateCurrentEdit', hotkey: {output: e.currentTarget.value}})} 
+                                    className="w-full h-full text-xl"
+                                    placeholder="Output Text"/>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className={`flex flex-row-reverse items-center grow gap-2 px-20 py-4 rounded-tl-2xl bg-fuchsia-200`}>
+                <div className={`flex flex-row-reverse items-center grow gap-2 px-20 py-4 rounded-tr-2xl bg-fuchsia-200`}>
                     <SpecialButton 
                         className={`py-4 w-20`} 
                         disabled={!hasPendingEdits} 

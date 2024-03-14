@@ -3,11 +3,11 @@ import { getKey, setKey } from "./databaseAPI"
 export const settingsKey = "settings";
 
 export type SettingsType = {
-
+    theme: 'auto'|'dark'|'light'
 }
 
 export const DefaultSettings: SettingsType = {
-
+    theme: 'auto'
 }
 
 export const setSettings = async (value: SettingsType) => {
@@ -30,6 +30,6 @@ export const getSettings = async (): Promise<SettingsType> => {
 
 export const updateSettings = async (value: Partial<SettingsType>): Promise<SettingsType> => {
     const newData: SettingsType = {...(await getSettings()), ...value}
-    await setSettings(value)
+    await setSettings(newData)
     return newData
 }

@@ -1,7 +1,8 @@
-import { DefaultSettings, SettingsType, getSettings } from "@/database/settingsAPI";
+import { DefaultSettings as defaultSettings, SettingsType, getSettings } from "@/database/settingsAPI";
 import { ReactNode, createContext, useContext, useEffect, useReducer } from "react";
 
-const SettingsContext = createContext<{settings: SettingsType, settingsDispatch: {}}|null>(null)
+export type SettingsContextType = {settings: SettingsType, settingsDispatch: {}}; 
+const SettingsContext = createContext<SettingsContextType|null>(null)
 
 type Props = {
     children: ReactNode
@@ -12,7 +13,7 @@ type ActionType =
     | { type: 'updateSettings', partialSettings: Partial<SettingsType> }
 
 const SettingsDataContext = (props: Props) => {
-    const [settings, settingsDispatch] = useReducer(settingsReducer, DefaultSettings)
+    const [settings, settingsDispatch] = useReducer(settingsReducer, defaultSettings)
 
     useEffect(()=> {
         getSettings().then((value)=> {
@@ -28,22 +29,33 @@ const SettingsDataContext = (props: Props) => {
 }
 
 export const useSettingsContext = () => {
-    return useContext(SettingsContext)
+    return useContext(SettingsContext) as SettingsContextType;
 }
 
-function settingsReducer(state: SettingsType, action: ActionType) {
-    return state;
+function settingsReducer(state: SettingsType, action: ActionType): SettingsType {
+    const returned = settingsSwitchSet(state, action);
+    if (!returned) return state
+    return returned;
 }
 
-function settingsSwitchSet(oldState: SettingsType, action: ActionType) {
+function settingsSwitchSet(oldState: SettingsType, action: ActionType): false|SettingsType {
     const newState = {...oldState}
     switch (action.type) {
         case 'setSettings':
-            return false;
+            return {...action.settings};
         
+
         case 'updateSettings':
-            return false;
+            // We don't want to trigger unnecessary updates
+            const noChanges = Object.keys(action.partialSettings).every((k) => {
+                const key = k as keyof SettingsType;
+                const obj: any = defaultSettings[key];
+                return Object.is(obj, oldState[key]) || obj===oldState[key]
+            })
+            if (noChanges) return false;
+            return {...newState, ...action.partialSettings}
     
+
         default:
             throw Error(
 `Settings action has not been implemented. Internal client error.
