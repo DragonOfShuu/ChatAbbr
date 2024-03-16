@@ -16,7 +16,9 @@ const SettingsDialog = (props: Props) => {
     }
 
     return (
-        <Dialog dialogInfo={{info: {open: props.openState.open, data: dialogInfoData}, setInfo: setDialogInfo}} className={`bg-fuchsia-200`}>
+        <Dialog 
+            dialogInfo={{info: {open: props.openState.open, data: dialogInfoData}, setInfo: setDialogInfo}} 
+            dialogClassName={`bg-fuchsia-200`}>
             <div>
 
             </div>

@@ -12,6 +12,7 @@ export type DialogProps = {
     className?: string,
     children?: ReactNode
     buttons?: {text: string, func: dialogFunc}[]
+    dialogClassName?: string
 }
 
 const Dialog = ({dialogInfo: {info, setInfo}, ...props}: DialogProps) => {
@@ -41,7 +42,7 @@ const Dialog = ({dialogInfo: {info, setInfo}, ...props}: DialogProps) => {
     }, [info])
 
     return (
-        <dialog ref={dialogRef} className={`${styles.dialog}`}>
+        <dialog ref={dialogRef} className={`${styles.dialog} ${props.dialogClassName??'p-4'}`}>
             <div className={`flex flex-col gap-2 items-stretch ${props.className??''}`}>
                 <div className='h-3 flex flex-row'>
                     <div className={`grow`} />
