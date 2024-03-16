@@ -1,15 +1,17 @@
-import React from 'react'
-import Dialog, { DialogProps, dialogFunc } from './Dialog'
+import { dialogFunc } from './Dialog'
+import InputDialog, { InputDialogType } from './InputDialog'
 
-type Props = {yesFunc: dialogFunc, noFunc: dialogFunc} & Omit<DialogProps, 'buttons'>
+type Props = 
+    {yesFunc: dialogFunc, noFunc: dialogFunc} 
+    // Using InputDialogType for readability and 
+    // reusability even though DialogProps works too
+    & Omit<InputDialogType, 'buttons'>
 
 const BooleanDialog = ({yesFunc, noFunc, ...props}: Props) => {
-    // const dialogInfo: DialogProps = {}
-
     return (
-        <Dialog {...props} buttons={[{text: "YES", func: yesFunc}, {text: "NO", func: noFunc}]}>
+        <InputDialog {...props} buttons={[{text: "YES", func: yesFunc}, {text: "NO", func: noFunc}]}>
 
-        </Dialog>
+        </InputDialog>
     )
 }
 

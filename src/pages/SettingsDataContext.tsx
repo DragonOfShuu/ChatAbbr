@@ -8,7 +8,7 @@ type Props = {
     children: ReactNode
 }
 
-type ActionType =
+export type SettingsActionType =
     | { type: 'setSettings', settings: SettingsType }
     | { type: 'updateSettings', partialSettings: Partial<SettingsType> }
 
@@ -32,13 +32,13 @@ export const useSettingsContext = () => {
     return useContext(SettingsContext) as SettingsContextType;
 }
 
-function settingsReducer(state: SettingsType, action: ActionType): SettingsType {
+function settingsReducer(state: SettingsType, action: SettingsActionType): SettingsType {
     const returned = settingsSwitchSet(state, action);
     if (!returned) return state
     return returned;
 }
 
-function settingsSwitchSet(oldState: SettingsType, action: ActionType): false|SettingsType {
+function settingsSwitchSet(oldState: SettingsType, action: SettingsActionType): false|SettingsType {
     const newState = {...oldState}
     switch (action.type) {
         case 'setSettings':
