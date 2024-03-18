@@ -1,7 +1,7 @@
 import { DefaultSettings as defaultSettings, SettingsType, getSettings } from "@/database/settingsAPI";
 import { ReactNode, createContext, useContext, useEffect, useReducer } from "react";
 
-export type SettingsContextType = {settings: SettingsType, settingsDispatch: {}}; 
+export type SettingsContextType = {settings: SettingsType, settingsDispatch: (value: SettingsActionType)=>void}; 
 const SettingsContext = createContext<SettingsContextType|null>(null)
 
 type Props = {

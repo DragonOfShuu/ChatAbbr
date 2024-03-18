@@ -18,7 +18,7 @@ import SpecialButton from "../../components/SpecialButton";
 
 import styles from './AbbrSidebar.module.sass'
 import SvgButton from "@/components/SvgButton";
-import SettingsDialog from "./SettingsDialog";
+import SettingsDialog from "./settings/SettingsDialog";
 
 // @ts-ignore
 const selectedContext = createContext<{selected: string[], setSelected: (ids: string[])=>any}>(null) 

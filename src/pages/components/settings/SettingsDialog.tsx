@@ -1,20 +1,18 @@
 import Dialog, { DialogInfoType } from '@/components/Dialog';
 import styles from './SettingsDialog.module.sass'
-import { ReactNode, useState } from 'react';
-import { SettingsType } from '@/database/settingsAPI';
-import { SettingsActionType } from '../SettingsDataContext';
+import { useState } from 'react';
+import SettingsCatalogue from './SettingsCatalogue';
+import { useSettingsContext } from '@/pages/SettingsDataContext';
 
 type Props = {
     openState: {open: boolean, setOpen: (newValue: boolean)=>any}
 }
 
-type SettingsSectionModel = {
-    name: string,
-    sectionContent: (settings: SettingsType, settingsDispatch: React.Dispatch<SettingsActionType>)=>ReactNode
-}
-
 const SettingsDialog = (props: Props) => {
     const [dialogInfoData, setDialogInfoData] = useState<DialogInfoType>({ open: false })
+    const [selected, setSelected] = useState<number>(0)
+
+    const {settings, settingsDispatch} = useSettingsContext()
 
     const setDialogInfo = (e: DialogInfoType) => {
         console.log("Info was set")
@@ -26,14 +24,20 @@ const SettingsDialog = (props: Props) => {
     return (
         <Dialog 
             dialogInfo={{info: {open: props.openState.open, data: dialogInfoData}, setInfo: setDialogInfo}} 
-            dialogClassName={`bg-fuchsia-200`}>
+            dialogClassName={`bg-fuchsia-200 ${styles.baseDialog}`}>
 
-                <div className={`${styles.settingsDialog}`}>
+                <div className={`${styles.innerDialog}`}>
                     <div>
-
+                        {
+                            SettingsCatalogue.map((model, index) => {
+                                return <SettingsSection selected={index===selected} text={model.name} onClick={()=> setSelected(index)} key={index} />
+                            })
+                        }
                     </div>
                     <div className={`bg-fuchsia-100`}>
-
+                        {
+                            (SettingsCatalogue[selected].sectionContent)(settings, settingsDispatch)
+                        }
                     </div>
                 </div>
         </Dialog>
@@ -43,16 +47,17 @@ const SettingsDialog = (props: Props) => {
 type SettingsSectionProps = {
     text: string,
     selected: boolean,
-    className?: string
+    className?: string,
+    onClick: (e: React.MouseEvent) => any
 }
 
 const SettingsSection = (props: SettingsSectionProps) => {
     const displayText = `${props.selected?'> ':''}${props.text}`
 
     return (
-        <div className={`${props.className??''} px-2 py-4 text-xl w-full h-14`}>
+        <button className={`${props.className??''} px-2 py-4 text-xl w-full h-14`} onClick={props.onClick}>
             <p className={``}>{displayText}</p>
-        </div>
+        </button>
     );
 }
 
