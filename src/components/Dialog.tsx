@@ -36,10 +36,10 @@ const Dialog = ({dialogInfo: {info, setInfo}, ...props}: DialogProps) => {
 
     return (
         <dialog ref={dialogRef} className={`${styles.dialog} ${props.dialogClassName??'p-4'}`}>
-            <div className={`flex flex-col gap-2 items-stretch ${props.className??''}`}>
-                <div className='h-3 flex flex-row'>
+            <div className={`flex flex-col gap-2 items-stretch py-2 ${props.className??''}`}>
+                <div className='h-5 flex flex-row items-center'>
                     <div className={`grow`} />
-                    <SvgButton image={plusIcon} onClick={closeClicked} className={`rotate-45`} />
+                    <SvgButton image={plusIcon} onClick={closeClicked} className={`rotate-45 h-full w-auto`} svgClassName='h-full w-auto' />
                 </div>
                 {props.children}
             </div>
