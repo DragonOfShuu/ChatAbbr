@@ -1,6 +1,7 @@
 import { getKey, setKey } from "./databaseAPI"
 
 export const abbrKey = "abbreviations";
+export const abbrVersion: number = 1;
 
 export type Options = {
 

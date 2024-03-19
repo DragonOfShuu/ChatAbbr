@@ -34,7 +34,7 @@ const SettingsDialog = (props: Props) => {
                             })
                         }
                     </div>
-                    <div className={`bg-fuchsia-100`}>
+                    <div className={`bg-fuchsia-100 max-h-full w-full p-4 ${styles.settingsContent}`}>
                         {
                             (SettingsCatalogue[selected].sectionContent)(settings, settingsDispatch)
                         }
