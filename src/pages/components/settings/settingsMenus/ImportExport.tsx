@@ -15,16 +15,26 @@ type Props = {
 }
 
 const ImportExportUI = (props: Props) => {
+    return (
+        <div className={`w-full h-full`}>
+            <h1>{`Hotkey Import/Export`}</h1>
+
+            <ExportHotkeys />
+
+            <ImportHotkeys />
+        </div>
+    )
+}
+
+const ExportHotkeys = (props: {}) => {
     const hotkeyData = useHotkeyContext();
-    const hotkeyDispatch = useHotkeyDispatchContext();
 
     const linkRef = useRef<HTMLAnchorElement>(null)
-    const filepickRef = useRef<HTMLInputElement>(null);
 
     const exportHotkeys = () => {
         if (!linkRef.current) return;
         // const hotkeys = {hotkeys: (await getAbbrList())};
-        const hotkeys = {"version": abbrVersion, [abbrsKey]: hotkeyData.hotkeyList}
+        const hotkeys = {"version": abbrVersion, [abbrsKey]: Object.values(hotkeyData.hotkeyList)}
 
         const blob = new Blob([JSON.stringify(hotkeys)], { type: "application/json" });
         const blobURL = URL.createObjectURL(blob);
@@ -33,6 +43,22 @@ const ImportExportUI = (props: Props) => {
         linkRef.current.download = "hotkeys.json";
         linkRef.current.click();
     }
+
+    return (
+        <>
+            <a target="_blank" href="about:blank" rel="noreferrer" className="collapse hidden" ref={linkRef}>{`bruh`}</a>
+            <SpecialButton onClick={exportHotkeys}>
+                Export My Hotkeys
+            </SpecialButton>
+        </>
+    )
+}
+
+const ImportHotkeys = (props: {}) => {
+    const hotkeyData = useHotkeyContext();
+    const hotkeyDispatch = useHotkeyDispatchContext();
+
+    const filepickRef = useRef<HTMLInputElement>(null);
 
     const importHotkeysClick = async () => {
         if (!filepickRef.current) return;
@@ -58,45 +84,49 @@ const ImportExportUI = (props: Props) => {
         }, [])
     )
 
-    const fileChanged = async () => {
+    const fileChanged = async (changeEvent: React.ChangeEvent<HTMLInputElement>) => {
+        console.log("File changed")
         if (!filepickRef.current || !filepickRef.current.files) return;
+        console.log("Okay to continue")
         
         const pendingFiles = Array.from(filepickRef.current.files)
         const files: string[] = []
         for (let i = 0; i<pendingFiles.length; i++) 
             files[i] = await pendingFiles[i].text()
+        console.log("Files text: ", files)
 
         let newHotkeyList: AbbrType[];
         try {
             newHotkeyList = convertFiles(files);
+            console.log("New hotkey list: ", newHotkeyList)
         } catch (e) {
             console.log(e)
             return
         }
 
         const indexedHotkeys = newHotkeyList.reduce<{[id: string]: AbbrType}>((builder, h, index)=> {
-            const uuid = generateUUID()+index
+            const uuid = generateUUID()+index // Attempt to make unique id
             builder[uuid] = {...h, id: uuid}
-            return builder // Attempt to make unique id
+            return builder 
         }, {})
 
+        console.log(`Indexed hotkeys:`, indexedHotkeys)
+        console.log(`Current hotkeydata list:`, hotkeyData.hotkeyList)
+
         hotkeyDispatch({type: 'setHotkeys', hotkeys: {...indexedHotkeys, ...hotkeyData.hotkeyList}})
+        changeEvent.target.value = ''; // Reset file list so changeevent works again
+        // Safari
+        changeEvent.target.type = '';
+        changeEvent.target.type = 'file';
     }
-
+    
     return (
-        <div className={`w-full h-full`}>
-            <h1>{`Hotkey Import/Export`}</h1>
-
-            <a target="_blank" href="about:blank" rel="noreferrer" className="collapse hidden" ref={linkRef}>{`bruh`}</a>
-            <SpecialButton onClick={exportHotkeys}>
-                Export My Hotkeys
-            </SpecialButton>
-
-            <input type="file" onChange={fileChanged} className="collapse hidden" ref={filepickRef} />
+        <>
+            <input type="file" onChange={(e: React.ChangeEvent<HTMLInputElement>)=> fileChanged(e)} className="collapse hidden" ref={filepickRef} />
             <SpecialButton onClick={importHotkeysClick}>
                 Import My Hotkeys
             </SpecialButton>
-        </div>
+        </>
     )
 }
 
