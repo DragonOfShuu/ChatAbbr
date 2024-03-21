@@ -4,10 +4,8 @@ import { SettingsActionType } from "@/pages/SettingsDataContext";
 import SpecialButton from "@/components/SpecialButton";
 import { useRef } from "react";
 import { useHotkeyContext, useHotkeyDispatchContext } from "@/pages/HotkeyDataContext";
-import { AbbrType, abbrVersion } from "@/database/abbrAPI";
-import { generateUUID } from "@/database/utilities";
+import { exportFiles, importFileList } from "@/utilities/ImportExportHotkeys";
 
-const abbrsKey = "abbrs";
 
 type Props = {
     settings: SettingsType,
@@ -34,9 +32,8 @@ const ExportHotkeys = (props: {}) => {
     const exportHotkeys = () => {
         if (!linkRef.current) return;
         // const hotkeys = {hotkeys: (await getAbbrList())};
-        const hotkeys = {"version": abbrVersion, [abbrsKey]: Object.values(hotkeyData.hotkeyList)}
 
-        const blob = new Blob([JSON.stringify(hotkeys)], { type: "application/json" });
+        const blob = new Blob([exportFiles(hotkeyData.hotkeyList)], { type: "application/json" });
         const blobURL = URL.createObjectURL(blob);
 
         linkRef.current.href = blobURL;
@@ -66,52 +63,10 @@ const ImportHotkeys = (props: {}) => {
         filepickRef.current.click();
     }
 
-    const convertFiles = (fileTexts: string[]) => (
-        fileTexts.reduce<AbbrType[]>((builder, curr) => {
-            const data = JSON.parse(curr)
-            if (!(abbrsKey in data) || !("version" in data)) 
-                throw new Error("Data does not contain hotkeys");
-            
-            if (data["version"] > abbrVersion) 
-                throw new Error("Imported hotkeys are a later version than your extension. Consider updating");
-            
-            // Here all we can do is make a leap of faith
-            const hotkeys: AbbrType[] = data[abbrsKey];
-    
-            builder.push(...hotkeys);
-    
-            return builder
-        }, [])
-    )
-
     const fileChanged = async (changeEvent: React.ChangeEvent<HTMLInputElement>) => {
-        console.log("File changed")
         if (!filepickRef.current || !filepickRef.current.files) return;
-        console.log("Okay to continue")
         
-        const pendingFiles = Array.from(filepickRef.current.files)
-        const files: string[] = []
-        for (let i = 0; i<pendingFiles.length; i++) 
-            files[i] = await pendingFiles[i].text()
-        console.log("Files text: ", files)
-
-        let newHotkeyList: AbbrType[];
-        try {
-            newHotkeyList = convertFiles(files);
-            console.log("New hotkey list: ", newHotkeyList)
-        } catch (e) {
-            console.log(e)
-            return
-        }
-
-        const indexedHotkeys = newHotkeyList.reduce<{[id: string]: AbbrType}>((builder, h, index)=> {
-            const uuid = generateUUID()+index // Attempt to make unique id
-            builder[uuid] = {...h, id: uuid}
-            return builder 
-        }, {})
-
-        console.log(`Indexed hotkeys:`, indexedHotkeys)
-        console.log(`Current hotkeydata list:`, hotkeyData.hotkeyList)
+        const indexedHotkeys = await importFileList(filepickRef.current.files)
 
         hotkeyDispatch({type: 'setHotkeys', hotkeys: {...indexedHotkeys, ...hotkeyData.hotkeyList}})
         changeEvent.target.value = ''; // Reset file list so changeevent works again
