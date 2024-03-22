@@ -57,12 +57,6 @@ const ImportHotkeys = (props: {}) => {
 
     const filepickRef = useRef<HTMLInputElement>(null);
 
-    const importHotkeysClick = async () => {
-        if (!filepickRef.current) return;
-        
-        filepickRef.current.click();
-    }
-
     const fileChanged = async (changeEvent: React.ChangeEvent<HTMLInputElement>) => {
         if (!filepickRef.current || !filepickRef.current.files) return;
         
@@ -77,8 +71,12 @@ const ImportHotkeys = (props: {}) => {
     
     return (
         <>
-            <input type="file" onChange={(e: React.ChangeEvent<HTMLInputElement>)=> fileChanged(e)} className="collapse hidden" ref={filepickRef} />
-            <SpecialButton onClick={importHotkeysClick}>
+            <input 
+                type="file" 
+                onChange={(e: React.ChangeEvent<HTMLInputElement>)=> fileChanged(e)} 
+                className="collapse hidden"
+                ref={filepickRef} />
+            <SpecialButton onClick={()=> filepickRef.current?.click()}>
                 Import My Hotkeys
             </SpecialButton>
         </>
