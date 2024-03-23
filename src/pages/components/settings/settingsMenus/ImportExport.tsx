@@ -7,6 +7,7 @@ import { useHotkeyContext, useHotkeyDispatchContext } from "@/pages/HotkeyDataCo
 import { exportFiles, importFileList } from "@/utilities/ImportExportHotkeys";
 import { AbbrType } from "@/database/abbrAPI";
 import { useGlobalMessageContext } from "@/components/GlobalUserMessage";
+import { useErrorDisplay } from "@/components/ErrorDisplayDiv";
 
 
 type Props = {
@@ -54,6 +55,8 @@ const ExportHotkeys = (props: {}) => {
 }
 
 const ImportHotkeys = (props: {}) => {
+    const {errorDisplayDispatch} = useErrorDisplay()
+
     const hotkeyData = useHotkeyContext();
     const hotkeyDispatch = useHotkeyDispatchContext();
     const {globalMessageDispatch} = useGlobalMessageContext();
@@ -62,11 +65,20 @@ const ImportHotkeys = (props: {}) => {
 
     const fileChanged = async (changeEvent: React.ChangeEvent<HTMLInputElement>) => {
         if (!filepickRef.current || !filepickRef.current.files) return;
+
+        const files: FileList = filepickRef.current.files;
+        const clearList = () => {
+            changeEvent.target.value = ''; // Reset file list so changeevent works again
+            // Safari
+            changeEvent.target.type = '';
+            changeEvent.target.type = 'file';
+        }
         
         let indexedHotkeys: { [id: string]: AbbrType; };
         try {
-            indexedHotkeys = await importFileList(filepickRef.current.files)
+            indexedHotkeys = await importFileList(files)
         } catch (e) {
+            clearList();
             let message: string;
             if (e instanceof Error) {
                 message = e.message;
@@ -75,15 +87,13 @@ const ImportHotkeys = (props: {}) => {
             }
             console.log(message)
             globalMessageDispatch({type: 'NewMessage', messages: {text: message, type: "error"}})
+            errorDisplayDispatch({type: "newError", error: {message: message, type: 'critical'}})
 
             return
         }
 
+        clearList()
         hotkeyDispatch({type: 'setHotkeys', hotkeys: {...indexedHotkeys, ...hotkeyData.hotkeyList}})
-        changeEvent.target.value = ''; // Reset file list so changeevent works again
-        // Safari
-        changeEvent.target.type = '';
-        changeEvent.target.type = 'file';
     }
     
     return (

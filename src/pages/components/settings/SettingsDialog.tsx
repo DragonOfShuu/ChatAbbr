@@ -3,6 +3,7 @@ import styles from './SettingsDialog.module.sass'
 import { useState } from 'react';
 import SettingsCatalogue from './SettingsCatalogue';
 import { useSettingsContext } from '@/pages/SettingsDataContext';
+import ErrorDisplayDiv from '@/components/ErrorDisplayDiv';
 
 type Props = {
     openState: {open: boolean, setOpen: (newValue: boolean)=>any}
@@ -34,11 +35,11 @@ const SettingsDialog = (props: Props) => {
                             })
                         }
                     </div>
-                    <div className={`bg-fuchsia-100 max-h-full w-full p-4 ${styles.settingsContent}`}>
+                    <ErrorDisplayDiv className={`bg-fuchsia-100 max-h-full w-full p-4 ${styles.settingsContent}`}>
                         {
                             (SettingsCatalogue[selected].sectionContent)(settings, settingsDispatch)
                         }
-                    </div>
+                    </ErrorDisplayDiv>
                 </div>
         </Dialog>
     )
