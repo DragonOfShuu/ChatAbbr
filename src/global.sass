@@ -63,3 +63,10 @@ textarea
 
 input[type="text"]
     @apply outline-none
+
+.no-scrollbar
+    -ms-overflow-style: none
+    scrollbar-width: none
+
+    &::-webkit-scrollbar
+        display: none

@@ -5,6 +5,8 @@ import SpecialButton from "@/components/SpecialButton";
 import { useRef } from "react";
 import { useHotkeyContext, useHotkeyDispatchContext } from "@/pages/HotkeyDataContext";
 import { exportFiles, importFileList } from "@/utilities/ImportExportHotkeys";
+import { AbbrType } from "@/database/abbrAPI";
+import { useGlobalMessageContext } from "@/components/GlobalUserMessage";
 
 
 type Props = {
@@ -54,13 +56,28 @@ const ExportHotkeys = (props: {}) => {
 const ImportHotkeys = (props: {}) => {
     const hotkeyData = useHotkeyContext();
     const hotkeyDispatch = useHotkeyDispatchContext();
+    const {globalMessageDispatch} = useGlobalMessageContext();
 
     const filepickRef = useRef<HTMLInputElement>(null);
 
     const fileChanged = async (changeEvent: React.ChangeEvent<HTMLInputElement>) => {
         if (!filepickRef.current || !filepickRef.current.files) return;
         
-        const indexedHotkeys = await importFileList(filepickRef.current.files)
+        let indexedHotkeys: { [id: string]: AbbrType; };
+        try {
+            indexedHotkeys = await importFileList(filepickRef.current.files)
+        } catch (e) {
+            let message: string;
+            if (e instanceof Error) {
+                message = e.message;
+            } else {
+                message = e as string;
+            }
+            console.log(message)
+            globalMessageDispatch({type: 'NewMessage', messages: {text: message, type: "error"}})
+
+            return
+        }
 
         hotkeyDispatch({type: 'setHotkeys', hotkeys: {...indexedHotkeys, ...hotkeyData.hotkeyList}})
         changeEvent.target.value = ''; // Reset file list so changeevent works again

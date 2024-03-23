@@ -3,6 +3,7 @@ import HotkeyDataContext from './HotkeyDataContext';
 import AbbrEditor from './components/AbbrEditor';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import SettingsDataContext from './SettingsDataContext';
+import GlobalMessageProvider from '@/components/GlobalUserMessage';
 
 type Props = {
 
@@ -14,11 +15,13 @@ const Root = (props: Props) => {
         <div className={`absolute inset-0`} >
             <ErrorBoundary fallbackRender={AppErrorScreen}>
                 <SettingsDataContext>
-                    <HotkeyDataContext>
-                        <AbbrSidebar className='w-96 max-w-96' />
+                    <GlobalMessageProvider>
+                        <HotkeyDataContext>
+                            <AbbrSidebar className='w-96 max-w-96' />
 
-                        <AbbrEditor className='pl-96' />
-                    </HotkeyDataContext>
+                            <AbbrEditor className='pl-96' />
+                        </HotkeyDataContext>
+                    </GlobalMessageProvider>
                 </SettingsDataContext>
             </ErrorBoundary>
         </div>
