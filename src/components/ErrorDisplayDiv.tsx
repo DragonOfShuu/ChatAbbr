@@ -27,7 +27,7 @@ const ErrorDisplayContext =
 type Props = {
     children: ReactNode
     className?: string
-    errorAbove?: true
+    errorBelow?: boolean
 }
 
 const determineMessageClass = (messageType: ErrorDataType["type"]): string => {
@@ -46,7 +46,7 @@ const ErrorDisplayDiv = (props: Props) => {
 
     return (
         <ErrorDisplayContext.Provider value={{errorDisplayManager: errorDisplayManager, errorDisplayDispatch: errorDisplayDispatch}}>
-            <div className={`flex ${props.errorAbove?'flex-col':'flex-col-reverse'} ${props.className??''}`}>
+            <div className={`flex ${props.errorBelow?'flex-col-reverse':'flex-col'} ${props.className??''}`}>
                 <div className={`flex flex-col gap-2`}>
                     {
                         errorDisplayManager.errors.map((error)=> (

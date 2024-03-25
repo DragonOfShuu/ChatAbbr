@@ -99,16 +99,19 @@ const GlobalMessage = (props: GlobalMessageType & {className?: string}) => {
     const borderColor = determineMessageColor();
 
     return (
-        <div className={`${props.className??''} rounded-lg w-72 h-32 overflow-hidden bg-white`}>
+        <div className={`${props.className??''} rounded-lg w-72 max-h-32 overflow-hidden bg-white shadow-md`}>
             <div className={`w-full h-full flex flex-col items-stretch border-l-2 ${borderColor} p-2`}>
-                <div className={`w-full h-1/6 flex flex-row-reverse`}>
+                <div className={`w-full h-6 flex flex-row items-center`}>
+                    <div className={`grow text-gray-500 uppercase`}>
+                        {props.type}
+                    </div>
                     <SvgButton 
                         image={plusIcon} 
                         onClick={()=>globalMessageDispatch({type: "RemoveId", ids: props.id})} 
                         svgClassName="rotate-45 h-full w-auto" 
                         className="h-full w-auto" />
                 </div>
-                <div className={`w-full h-5/6 text-lg`}>
+                <div className={`w-full h-5/6 text-lg px-3 py-1`}>
                     {props.text}
                 </div>
             </div>

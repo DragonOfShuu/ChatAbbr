@@ -5,7 +5,12 @@ const abbrsKey = "abbrs";
 
 const convertFiles = (fileTexts: string[]) => (
     fileTexts.reduce<AbbrType[]>((builder, curr) => {
-        const data = JSON.parse(curr)
+        let data;
+        try {
+            data = JSON.parse(curr)
+        } catch (e) {
+            throw new Error("The file chosen does not contain hotkeys")
+        }
         if (!(abbrsKey in data) || !("version" in data)) 
             throw new Error("Data does not contain hotkeys");
         

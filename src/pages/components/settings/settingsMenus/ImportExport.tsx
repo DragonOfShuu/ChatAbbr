@@ -40,7 +40,7 @@ const ExportHotkeys = (props: {}) => {
         const blobURL = URL.createObjectURL(blob);
 
         linkRef.current.href = blobURL;
-        linkRef.current.download = "hotkeys.json";
+        linkRef.current.download = "ParadigmHotkeys.htks";
         linkRef.current.click();
     }
 
