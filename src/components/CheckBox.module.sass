@@ -21,12 +21,12 @@
 .input
     -webkit-appearance: none
     appearance: none
-    background-color: #fff
+    background-color: #ffffff3c
     margin: 0
     
     width: 1em
     height: 1em
-    border: 2px solid #000000
+    border: 1.5px solid #000000
     border-radius: 0.15em
 
     display: grid
@@ -34,24 +34,11 @@
 
     overflow: hidden
 
-    &::before 
-        content: ""
-        width: 0.65em
-        height: 0.65em
-        // transform: translateX(-20px)
-        // transition: 120ms transform ease-in-out
-        animation: 500ms both fromCheck
-        box-shadow: inset 1.2em 1.2em theme('colors.fuchsia.500')
-    
-    &:hover::before
-        box-shadow: inset 1.2em 1.2em theme('colors.fuchsia.400')
+    &:hover
+        background-color: #ffffff5e
 
-    &:checked::before 
-        // transform: translateX(0)
-        // animation: 120ms toCheck
-        animation-duration: 500ms
-        animation-name: toCheck
-        animation-fill-mode: both
+    &:checked
+        background-color: theme("colors.fuchsia.600" / 80%)
 
-
-// .checkbox
+    &:hover:checked
+        background-color: theme("colors.fuchsia.400" / 80%)

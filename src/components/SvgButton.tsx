@@ -16,12 +16,14 @@ const SvgButton = (props: SvgButtonProps) => {
     const height = props.scale??props.height??defaultSize
 
     return (
-        <button className={`${props.className} bg-opacity-0`}>
+        <button className={`${props.className??''} bg-opacity-0`}>
             <props.image 
                 width={width} 
                 height={height} 
                 strokeWidth={props.strokeWidth??2} 
-                className={`${props.svgClassName??''} ${props.strokeClasses??'stroke-black hover:stroke-rose-600'}`} 
+                // Preserve aspect ratio does exist; 
+                // but object-contain is the fun way :)
+                className={`object-contain w-full h-full ${props.svgClassName??''} ${props.strokeClasses??'stroke-black hover:stroke-rose-600'}`} 
                 onClick={props.onClick} />
         </button>
     )
