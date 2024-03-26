@@ -6,11 +6,11 @@
 
 @keyframes backdropAnim
     0%
-        backdrop-filter: blur(0)
+        backdrop-filter: blur(0) grayscale(0)
         background-color: #00000000
     100%
-        backdrop-filter: blur(4px)
-        background-color: theme('colors.pink.800' / 10%)
+        backdrop-filter: blur(4px) grayscale(30%)
+        background-color: theme('colors.gray.700' / 20%)
     
 .dialog
     animation: dialogAppear 0.2s ease-out both

@@ -1,0 +1,57 @@
+.label
+    display: flex
+    flex-direction: row
+    gap: 5px
+    align-items: center
+    justify-items: center
+    place-items: center
+
+@keyframes toCheck
+    0%
+        transform: scale(0)
+    100%
+        transform: scale(1)
+
+@keyframes fromCheck
+    0%
+        transform: scale(1)
+    100%
+        transform: scale(0)
+
+.input
+    -webkit-appearance: none
+    appearance: none
+    background-color: #fff
+    margin: 0
+    
+    width: 1em
+    height: 1em
+    border: 2px solid #000000
+    border-radius: 0.15em
+
+    display: grid
+    place-content: center
+
+    overflow: hidden
+
+    &::before 
+        content: ""
+        width: 0.65em
+        height: 0.65em
+        // transform: translateX(-20px)
+        // transition: 120ms transform ease-in-out
+        animation: 500ms both fromCheck
+        box-shadow: inset 1.2em 1.2em theme('colors.fuchsia.500')
+    
+    &:hover::before
+        box-shadow: inset 1.2em 1.2em theme('colors.fuchsia.400')
+
+    &:checked::before 
+        // transform: translateX(0)
+        // animation: 120ms toCheck
+        animation-duration: 500ms
+        animation-name: toCheck
+        animation-fill-mode: both
+
+
+// .checkbox

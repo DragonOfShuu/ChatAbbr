@@ -19,6 +19,7 @@ import SpecialButton from "../../components/SpecialButton";
 import styles from './AbbrSidebar.module.sass'
 import SvgButton from "@/components/SvgButton";
 import SettingsDialog from "./settings/SettingsDialog";
+import CheckBox from "@/components/CheckBox";
 
 // @ts-ignore
 const selectedContext = createContext<{selected: string[], setSelected: (ids: string[])=>any}>(null) 
@@ -189,9 +190,12 @@ const SidebarElement = ({hotkey, onClick, selected, setSelected}: {hotkey: AbbrT
         onClick={onClick}>
             <div className={`flex flex-col justify-center w-1/12 items-center py-3`}>
                 <SvgButton image={sortUp} onClick={()=> moveElement(true)} svgClassName={`w-full h-auto`} strokeWidth={1} />
-                <input 
+                {/* <input 
                     type="checkbox" 
                     onChange={(x)=> checkmarkClicked(x.target.checked, actualHotkey.id)} 
+                    checked={selected.includes(actualHotkey.id)} /> */}
+                <CheckBox 
+                    onChange={(x)=> checkmarkClicked(x.target.checked, actualHotkey.id)}
                     checked={selected.includes(actualHotkey.id)} />
                 <SvgButton image={sortDown} onClick={()=> moveElement(false)} svgClassName={`w-full h-auto`} strokeWidth={1} />
             </div>
