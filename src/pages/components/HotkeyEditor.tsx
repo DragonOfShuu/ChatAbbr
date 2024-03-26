@@ -71,7 +71,7 @@ const HotkeyToolbar = (props: {className?: string}) => {
             <input 
                 onChange={(e)=> setAndCheckHotText(e.target.value)}
                 value={hotkeyText}
-                className={`rounded-md grow px-3 py-2 text-lg`}
+                className={`rounded-md grow px-3 py-2 text-lg min-w-2`}
                 placeholder={`New Hotkey...`}
                 ref={toolBarInput}
                 onKeyDown={(e) => { if (e.key==="Enter") installHotkey() }}
@@ -81,23 +81,15 @@ const HotkeyToolbar = (props: {className?: string}) => {
     )
 }
 
-// const HotkeyElButton = (props: {className?: string, onClick: ()=>void, image: SVGRType}) => {
-//     return (
-//         <props.image 
-//             width={40} 
-//             height={40} 
-//             strokeWidth={2} 
-//             className={`${props.className??''} select-none cursor-pointer stroke-black hover:stroke-gray-800`} 
-//             onClick={props.onClick} />
-//     )
-// }
-
 const HotkeyElement = (props: { text: string; index: number; hotkeyArray: string[]; }) => {
     const hotkeyData = useHotkeyContext();
     const dispatch = useHotkeyDispatchContext();
 
     const [hotkeyText, setHotkeyText] = useState<string>(props.text);
     const [isEditing, setEditing] = useState<boolean>(false);
+
+    const svgButtonClassname = "lg:h-3/4 h-1/2 w-auto"
+    // const className = "lg:h-full h-3/4 w-auto"
 
     useEffect(() => {
         setHotkeyText(props.text);
@@ -168,16 +160,16 @@ const HotkeyElement = (props: { text: string; index: number; hotkeyArray: string
 
                     <div className={`w-2`} />
 
-                    <SvgButton image={NoPencilIcon} onClick={cancelEdits} />
-                    <SvgButton image={CheckIcon} onClick={installEdits} />
+                    <SvgButton image={NoPencilIcon} onClick={cancelEdits} className={`${svgButtonClassname}`} />
+                    <SvgButton image={CheckIcon} onClick={installEdits} className={`${svgButtonClassname}`} />
                 </>
                 :
                 <>
                     {props.text}
                     <div className="grow" />
                     {/** Pencil and x to delete */}
-                    <SvgButton image={PencilIcon} onClick={() => setEditing(true)} /> 
-                    <SvgButton image={PlusIcon} onClick={deleteThis} className={`rotate-45`} />
+                    <SvgButton image={PencilIcon} onClick={() => setEditing(true)} className={`${svgButtonClassname}`} /> 
+                    <SvgButton image={PlusIcon} onClick={deleteThis} className={`rotate-45 ${svgButtonClassname}`} />
                 </>
             }
         </div>

@@ -33,7 +33,7 @@ const AbbrEditor = (props: Props) => {
                             onChange={(e)=> hotkeyDataDispatch({type: 'updateCurrentEdit', hotkey: {name: e.currentTarget.value}})}
                             value={hotkeyData.currentHotkeyEdit.name} /> 
 
-                        <div className={`h-[70vh] px-16 py-5 flex flex-row gap-3`}>
+                        <div className={`h-[70vh] 2xl:px-16 py-5 flex flex-row gap-3`}>
                             <div className={`w-1/3 h-full`}>
                                 {/* Box for all hotkeys */}
                                 <HotkeyEditor className={`h-full max-h-full`} />
