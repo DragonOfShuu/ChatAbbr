@@ -4,10 +4,9 @@ import { AbbrType, getAbbrList } from "@/database/abbrAPI";
 // import { getAbbrList } from "@/";
 import { useHotkeyContext, useHotkeyDispatchContext } from "../HotkeyDataContext";
 
-// import minusIcon from "icons/minus.svg"
 import TrashIcon from "@/icons/TrashIcon.svg"
 import PlusIcon from "@/icons/plusIcon.svg"
-// import saveIcon from "@/icons/FloppyDisk.svg"
+import HamburgerIcon from '@/icons/Hamburger.svg'
 import FloppyDisk from "@/icons/FloppyDisk.svg";
 import GearIcon from '@/icons/gear.svg';
 import sortDown from "@/icons/sortDown.svg"
@@ -24,28 +23,48 @@ import CheckBox from "@/components/CheckBox";
 // @ts-ignore
 const selectedContext = createContext<{selected: string[], setSelected: (ids: string[])=>any}>(null) 
 
-const AbbrSidebar = (props: { className: string }) => {
+// I have now discovered you cannot put a dialog
+// inside of a css container query without the 
+// browser crashing.
+
+const AbbrSidebar = (props: { className: string, expanded: boolean, setExpanded: (x: boolean)=>any}) => {
     const [selected, setSelected] = useState<string[]>([])
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false)
 
     return (
         <selectedContext.Provider value={{selected: selected, setSelected: setSelected}}>
             <SettingsDialog openState={{open: settingsOpen, setOpen: setSettingsOpen}} />
-            <div className={`${props.className??''} min-h-screen h-screen w-full bg-fuchsia-200 fixed flex flex-col rounded-tr-2xl`}>
+            <div className={`${props.className??''} bg-fuchsia-200 flex flex-col rounded-tr-2xl`}>
                 <div className={`p-2 flex flex-col grow w-full`}>
                     <div className={`w-full flex flex-row`}>
-                        <h1 className="text-6xl">
-                            Paradigm
-                        </h1>
+                        {
+                            props.expanded?
+                            <h1 className={`text-6xl ${props.expanded?'w-auto text-left':'w-full text-center'}`}>
+                                Paradigm
+                            </h1>
+                            :
+                            <SvgButton image={HamburgerIcon} onClick={()=>props.setExpanded(true)} className={`w-full h-10`} />
+                        }
                         <div className={`grow`} />
-                        <SvgButton image={GearIcon} onClick={()=> setSettingsOpen(true)} className={`self-start`} scale={30} />
+                        {
+                            props.expanded?
+                            <>
+                                <div className={`grow`} />
+                                <div className={`self-stretch flex flex-col justify-between`}>
+                                    <SvgButton image={PlusIcon} className={`rotate-45`} onClick={()=> props.setExpanded(false)} scale={30} />
+                                    <SvgButton image={GearIcon} onClick={()=> setSettingsOpen(true)} scale={30} />
+                                </div>
+                            </>
+                            :
+                            <></>
+                        }
                     </div>
-                    <SidebarToolbar className={`grow`} />
+                    <SidebarToolbar className={`grow ${props.expanded?'block':'hidden'}`} />
                 </div>
 
-                <SideBarContent className={`h-3/4 w-full`} />
+                <SideBarContent className={`${props.expanded?'h-3/4':'h-5/6'} w-full`} />
                 
-                <div className={`p-2 w-full`}>
+                <div className={`p-2 w-full ${props.expanded?'visible':'collapse'}`}>
                     <a href="https://dragonofshuu.dev/" target="_blank" rel="noopener noreferrer">
                         {`Made with <3 by Logan Cederlof`}
                     </a>
@@ -86,6 +105,9 @@ const SideBarContent = (props: {className?: string}) => {
     
     // Could I use suspense to avoid any kind of waterfalls? 
     // Maybe. Is it worth it? Definitely not.
+    // Could I use lazy loading? Probably. Should I do it?
+    // No, just out of spite because I don't know why
+    // React implemented it that way.
     if (!isLoaded) 
         return <LoadingComp className={`grow flex justify-center items-center`} />
 
@@ -185,35 +207,36 @@ const SidebarElement = ({hotkey, onClick, selected, setSelected}: {hotkey: AbbrT
 
     return (
         <div 
-        className={`${styles.sidebarElement} ${isCurrentEdit?styles.sidebarElementSelected:''}`}
+        className={` w-full max-w-full @container/sidebarelem`}
         key={actualHotkey.id}
         onClick={onClick}>
-            <div className={`flex flex-col justify-center w-1/12 items-center py-3`}>
-                <SvgButton image={sortUp} onClick={()=> moveElement(true)} svgClassName={`w-full h-auto`} strokeWidth={1} />
-                {/* <input 
-                    type="checkbox" 
-                    onChange={(x)=> checkmarkClicked(x.target.checked, actualHotkey.id)} 
-                    checked={selected.includes(actualHotkey.id)} /> */}
-                <CheckBox 
-                    onChange={(x)=> checkmarkClicked(x.target.checked, actualHotkey.id)}
-                    checked={selected.includes(actualHotkey.id)} />
-                <SvgButton image={sortDown} onClick={()=> moveElement(false)} svgClassName={`w-full h-auto`} strokeWidth={1} />
-            </div>
+            <div className={`${styles.sidebarElement} ${isCurrentEdit?styles.sidebarElementSelected:''} @xs/sidebarelem:min-h-20 @xs/sidebarelem:max-h-20 min-h-40 max-h-40`}>
+                <div className={`hidden @xs/sidebarelem:flex flex-col justify-center w-1/12 items-center py-3`}>
+                    <SvgButton image={sortUp} onClick={()=> moveElement(true)} svgClassName={`w-full h-auto`} strokeWidth={1} />
+                    <CheckBox 
+                        onChange={(x)=> checkmarkClicked(x.target.checked, actualHotkey.id)}
+                        checked={selected.includes(actualHotkey.id)} />
+                    <SvgButton image={sortDown} onClick={()=> moveElement(false)} svgClassName={`w-full h-auto`} strokeWidth={1} />
+                </div>
 
-            {/* ClassName alternatively contains w-full instead of grow */}
-            <div className={`flex flex-row py-5 h-full grow max-w-full items-center`}>
-                <p className="overflow-ellipsis overflow-hidden whitespace-nowrap max-w-[250px] min-w-0">
-                    {hotkeyText}
-                </p>
-                <div className={`grow`} />
-                { 
-                    needSaveIcon?
-                        <SvgButton 
-                            image={FloppyDisk} 
-                            onClick={()=> hotkeyDispatch({type: 'saveEdits', id: actualHotkey.id})}
-                            strokeClasses={`h-full w-auto stroke-fuchsia-500 hover:stroke-fuchsia-400`} /> 
-                        : <></> 
-                }
+                <div className={`flex flex-row @xs/sidebarelem:py-5 py-1 h-full grow max-w-full items-center justify-center @xs/sidebarelem:justify-normal`}>
+                    <div className={`grow @xs/sidebarelem:grow-0`} />
+                    <p className="overflow-ellipsis overflow-hidden whitespace-nowrap max-w-[250px] min-w-0 @xs/sidebarelem:block hidden">
+                        {hotkeyText}
+                    </p>
+                    <p className={`overflow-ellipsis overflow-hidden h-full whitespace-nowrap @xs/sidebarelem:hidden block sidewaysText text-base text-center`}>
+                        {actualHotkey.hotkeys[0]??'-'}
+                    </p>
+                    <div className={`grow @xs/sidebarelem:grow-0`} />
+                    {
+                        needSaveIcon?
+                            <SvgButton 
+                                image={FloppyDisk} 
+                                onClick={()=> hotkeyDispatch({type: 'saveEdits', id: actualHotkey.id})}
+                                strokeClasses={`h-full w-auto stroke-fuchsia-500 hover:stroke-fuchsia-400 @xs/sidebarelem:visible collapse`} /> 
+                            : <></> 
+                    }
+                </div>
             </div>
         </div>
     )
