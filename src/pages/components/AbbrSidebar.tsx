@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react"
 import LoadingComp from "@/components/Loading";
 import { AbbrType, getAbbrList } from "@/database/abbrAPI";
-// import { getAbbrList } from "@/";
 import { useHotkeyContext, useHotkeyDispatchContext } from "../HotkeyDataContext";
 
 import TrashIcon from "@/icons/TrashIcon.svg"
@@ -79,7 +78,6 @@ const SideBarContent = (props: {className?: string}) => {
     const hotkeyDispatchContext = useHotkeyDispatchContext();
     const {selected, setSelected} = useContext(selectedContext)
     const [isLoaded, setLoaded] = useState(false)
-    // const [discardHotkeyInfo, setHotkeyDiscInfo] = useState<DialogInfoType>({open: false, data: {}})
 
     useEffect(()=> {
         getAbbrList().then((value): void =>{
