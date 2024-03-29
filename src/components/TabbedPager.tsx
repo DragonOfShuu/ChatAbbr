@@ -32,18 +32,20 @@ const TabbedPager = (props: Props) => {
 
     return (
         <div className={`${props.className??''}`}>
-            <Tabs className={`w-full h-12`} tabs={Object.keys(props.children)} selected={page?.index} setSelected={setPageIndex} />
-            <div className={`h-full max-h-full w-full max-w-full overflow-hidden`}>
-                {
-                    page===undefined?
-                        <div className="w-full h-full flex flex-col place-content-center">
-                            <h1 className={`text-fuchsia-300`}>
-                                No Data Selected
-                            </h1>
-                        </div>
-                        :
-                        props.children[page.name]
-                }
+            <div className={`w-full h-full flex flex-col`}>
+                <Tabs className={`w-full h-12`} tabs={Object.keys(props.children)} selected={page?.index} setSelected={setPageIndex} />
+                <div className={`grow w-full max-w-full overflow-hidden`}>
+                    {
+                        page===undefined?
+                            <div className="w-full h-full flex flex-col place-content-center">
+                                <h1 className={`text-fuchsia-300`}>
+                                    No Data Selected
+                                </h1>
+                            </div>
+                            :
+                            props.children[page.name]
+                    }
+                </div>
             </div>
         </div>
     )

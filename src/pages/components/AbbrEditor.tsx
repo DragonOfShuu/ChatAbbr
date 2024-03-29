@@ -49,7 +49,7 @@ const AbbrEditor = (props: Props) => {
                     </div>
                 </div>
 
-                <div className={`flex flex-row-reverse items-center grow gap-2 px-20 py-4 rounded-tr-2xl bg-fuchsia-200`}>
+                <div className={`flex flex-row-reverse items-center grow gap-2 xl:px-20 px-5 py-4 rounded-tr-2xl bg-fuchsia-200`}>
                     <SpecialButton 
                         className={`py-4 w-20`} 
                         disabled={!hasPendingEdits} 
@@ -65,10 +65,6 @@ const AbbrEditor = (props: Props) => {
                         }>
                         Cancel
                     </SpecialButton>
-                    {/* cancel and save buttons */}
-                    {/* Cancel: Cancels edits by getting previous id information
-                    and placing it in the textboxes. If the previous id information
-                    doesn't exist, it will just remove the "currentEdits" entirely */}
                 </div>
             </div>
         </div>

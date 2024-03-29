@@ -34,7 +34,7 @@ const AbbrSidebar = (props: { className: string, expanded: boolean, setExpanded:
         <selectedContext.Provider value={{selected: selected, setSelected: setSelected}}>
             <SettingsDialog openState={{open: settingsOpen, setOpen: setSettingsOpen}} />
             <div className={`${props.className??''} bg-fuchsia-200 flex flex-col rounded-tr-2xl`}>
-                <div className={`p-2 flex flex-col grow w-full`}>
+                <div className={`p-2 flex flex-col w-full`}>
                     <div className={`w-full flex flex-row`}>
                         {
                             props.expanded?
@@ -61,7 +61,7 @@ const AbbrSidebar = (props: { className: string, expanded: boolean, setExpanded:
                     <SidebarToolbar className={`grow ${props.expanded?'block':'hidden'}`} />
                 </div>
 
-                <SideBarContent className={`${props.expanded?'h-3/4':'h-5/6'} w-full`} />
+                <SideBarContent className={`grow w-full`} />
                 
                 <div className={`p-2 w-full ${props.expanded?'visible':'collapse'}`}>
                     <a href="https://dragonofshuu.dev/" target="_blank" rel="noopener noreferrer">
@@ -231,7 +231,8 @@ const SidebarElement = ({hotkey, onClick, selected, setSelected}: {hotkey: AbbrT
                             <SvgButton 
                                 image={FloppyDisk} 
                                 onClick={()=> hotkeyDispatch({type: 'saveEdits', id: actualHotkey.id})}
-                                strokeClasses={`h-full w-auto stroke-fuchsia-500 hover:stroke-fuchsia-400 @xs/sidebarelem:visible collapse`} /> 
+                                className={`@xs/sidebarelem:block hidden`}
+                                strokeClasses={`h-full w-auto stroke-fuchsia-500 hover:stroke-fuchsia-400`} /> 
                             : <></> 
                     }
                 </div>
