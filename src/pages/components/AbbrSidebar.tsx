@@ -58,7 +58,7 @@ const AbbrSidebar = (props: { className: string, expanded: boolean, setExpanded:
                             <></>
                         }
                     </div>
-                    <SidebarToolbar className={`grow ${props.expanded?'block':'hidden'}`} />
+                    <SidebarToolbar className={`${props.expanded?'block':'hidden'}`} />
                 </div>
 
                 <SideBarContent className={`grow w-full`} />
@@ -225,7 +225,7 @@ const SidebarElement = ({hotkey, onClick, selected, setSelected}: {hotkey: AbbrT
                     <p className={`overflow-ellipsis overflow-hidden h-full whitespace-nowrap @xs/sidebarelem:hidden block sidewaysText text-base text-center`}>
                         {actualHotkey.hotkeys[0]??'-'}
                     </p>
-                    <div className={`grow @xs/sidebarelem:grow-0`} />
+                    <div className={`grow`} />
                     {
                         needSaveIcon?
                             <SvgButton 

@@ -4,6 +4,7 @@ import AbbrSidebar from './components/AbbrSidebar';
 import AbbrEditor from './components/AbbrEditor';
 
 import useWindowDimensions from '@/components/hooks/UseWindowDimensions';
+import { useHotkeyContext } from './HotkeyDataContext';
 
 const Root = () => {
     // If sidebar is absolute expanded or not
@@ -14,6 +15,8 @@ const Root = () => {
     // up space in the UI
     const [sidebarTakesSpace, setSidebarTakesSpace] = useState<boolean>(false);
     const {width} = useWindowDimensions();
+
+    const hotkeyData = useHotkeyContext();
 
     useEffect(()=> {
         if (width >= 1024) {
@@ -27,6 +30,23 @@ const Root = () => {
         setExpanded(userExpand??false)
     }, [width, userExpand])
 
+    useEffect(()=> {
+        const onUnload = (e: BeforeUnloadEvent) => {
+            if (hotkeyData.hasEdits && Object.keys(hotkeyData.hasEdits).length) {
+                console.log(`Hotkey changes: `, hotkeyData.hasEdits)
+                let exitConfirmation = `Are you sure you want to leave before saving changes? (changes will be lost)`;
+
+                (e || window.event).returnValue = exitConfirmation; //Gecko + IE
+                return exitConfirmation; //Gecko + Webkit, Safari, Chrome etc.
+            }
+        }
+
+        window.addEventListener('beforeunload', onUnload)
+        return ()=> window.removeEventListener('beforeunload', onUnload)
+        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     return (
         <div className={`absolute inset-0`} >
             <AbbrSidebar 
@@ -37,7 +57,7 @@ const Root = () => {
                 className={`fixed z-20 w-full h-full ${(!sidebarTakesSpace && expanded)?'bg-fuchsia-300 bg-opacity-20 backdrop-grayscale-[50%]':'pointer-events-none'}`} 
                 onClick={()=>setUserExpand(false)} />
 
-            <AbbrEditor className={`relative z-10 ${sidebarTakesSpace?'pl-96':'pl-20'}`} />
+            <AbbrEditor className={`relative z-10 w-full h-full ${sidebarTakesSpace?'pl-96':'pl-20'}`} />
         </div>
     )
 }

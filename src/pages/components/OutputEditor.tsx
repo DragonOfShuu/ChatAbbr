@@ -1,5 +1,13 @@
 import { useHotkeyContext, useHotkeyDispatchContext } from "../HotkeyDataContext"
 
+/**
+ * We will be utilizing lexical. Look into the "serialization"
+ * and "deserialization." Just like magical, we can use
+ * percent signs to determine a placeholder: %pl.manager%
+ * 
+ * Editor: https://lexical.dev/docs/intro
+ */
+
 type Props = {
     className?: string
 }
