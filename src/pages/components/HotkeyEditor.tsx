@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import styles from './AbbrEditor.module.sass';
+import { useEffect, useRef, useState } from "react";
+// import styles from './AbbrEditor.module.sass';
 
 import PencilIcon from '@/icons/Pencil.svg';
 import NoPencilIcon from '@/icons/NoPencil.svg';
@@ -29,9 +29,9 @@ export const HotkeyEditor = (props: { className?: string; }) => {
                 <HotkeyToolbar className={`py-2`} />
                 {/** Actual Hotkeys */}
                 <div className={`flex flex-col items-stretch grow overflow-y-auto`}>
-                    {hotkeyData.currentHotkeyEdit?.hotkeys.map((h, index, hotkeyArray) => {
+                    {hotkeyData.currentHotkeyEdit?.hotkeys.map((h, _, hotkeyArray) => {
                         return (
-                            <HotkeyElement text={h} index={index} hotkeyArray={hotkeyArray} key={h} />
+                            <HotkeyElement text={h} hotkeyArray={hotkeyArray} key={h} />
                         );
                     })}
                 </div>
@@ -47,10 +47,25 @@ const HotkeyToolbar = (props: {className?: string}) => {
 
     const toolBarInput = useRef<HTMLInputElement>(null)
 
-    const setAndCheckHotText = useCallback((newText: string) => {
-        if (textAllowed(newText))
+    const [showError, setShowError] = useState<boolean>(false)
+    const [errorTimer, setErrorTimer] = useState<number|undefined>(undefined)
+
+    const exclaimWrongChar = () => {
+        setShowError(true);
+        clearTimeout(errorTimer)
+
+        setErrorTimer(setTimeout(()=> {
+            setErrorTimer(undefined)
+            setShowError(false)
+        }, 5000))
+    }
+
+    const setAndCheckHotText = (newText: string) => {
+        if (textAllowed(newText)) {
             setHotkeyText(newText)
-    }, [])
+        } else 
+            exclaimWrongChar()
+    }
 
     const installHotkey = () => {
         if   ( !hotkeyData.currentHotkeyEdit 
@@ -68,20 +83,26 @@ const HotkeyToolbar = (props: {className?: string}) => {
 
     return (
         <div className={`flex flex-row gap-2 justify-evenly px-2 py-1 ${props.className}`}>
-            <input 
-                onChange={(e)=> setAndCheckHotText(e.target.value)}
-                value={hotkeyText}
-                className={`rounded-md grow px-3 py-2 text-lg min-w-2`}
-                placeholder={`New Hotkey...`}
-                ref={toolBarInput}
-                onKeyDown={(e) => { if (e.key==="Enter") installHotkey() }}
-            />
+            <div className={`relative inline-block grow min-w-2`}>
+                <input 
+                    onChange={(e)=> setAndCheckHotText(e.target.value)}
+                    value={hotkeyText}
+                    className={`rounded-md px-3 py-2 text-lg w-full ${showError?'rounded-b-none':''}`}
+                    placeholder={`New Hotkey...`}
+                    ref={toolBarInput}
+                    onKeyDown={(e) => { if (e.key==="Enter") installHotkey() }}
+                />
+                <div 
+                    className={`absolute ${showError?'scale-y-100':'scale-y-0'} rounded-b-md transition-transform origin-top p-2 bg-rose-300 border-rose-400 w-full border-2 z-10`}>
+                    Hotkeys cannot include certain characters, and spaces must be at the end
+                </div>
+            </div>
             <SpecialButton Image={PlusIcon} alt={`Add New Hotkey`} onClick={installHotkey} />
         </div>
     )
 }
 
-const HotkeyElement = (props: { text: string; index: number; hotkeyArray: string[]; }) => {
+const HotkeyElement = (props: { text: string, hotkeyArray: string[] }) => {
     const hotkeyData = useHotkeyContext();
     const dispatch = useHotkeyDispatchContext();
 
@@ -89,7 +110,6 @@ const HotkeyElement = (props: { text: string; index: number; hotkeyArray: string
     const [isEditing, setEditing] = useState<boolean>(false);
 
     const svgButtonClassname = "lg:h-3/4 h-1/2 w-auto"
-    // const className = "lg:h-full h-3/4 w-auto"
 
     useEffect(() => {
         setHotkeyText(props.text);
@@ -146,7 +166,7 @@ const HotkeyElement = (props: { text: string; index: number; hotkeyArray: string
     return (
         <div
             key={props.text}
-            className={`px-4 py-2 h-16 text-xl flex flex-row items-center ${styles.hotkeyContainer} ${props.index % 2 ? styles.hotkeyContainer2 : styles.hotkeyContainer1}`}
+            className={`px-4 py-2 h-16 text-xl flex flex-row items-center odd:bg-rose-500/30 even:bg-rose-300/30 odd:hover:bg-rose-500/20 even:hover:bg-rose-300/20`}
         >
 
             {

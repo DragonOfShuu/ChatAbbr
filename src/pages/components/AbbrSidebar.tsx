@@ -222,7 +222,7 @@ const SidebarElement = ({hotkey, onClick, selected, setSelected}: {hotkey: AbbrT
                     <p className="overflow-ellipsis overflow-hidden whitespace-nowrap max-w-[250px] min-w-0 @xs/sidebarelem:block hidden">
                         {hotkeyText}
                     </p>
-                    <p className={`overflow-ellipsis overflow-hidden h-full whitespace-nowrap @xs/sidebarelem:hidden block sidewaysText text-base text-center`}>
+                    <p className={`truncate h-full @xs/sidebarelem:hidden block sidewaysText text-base text-center`}>
                         {actualHotkey.hotkeys[0]??'-'}
                     </p>
                     <div className={`grow`} />
