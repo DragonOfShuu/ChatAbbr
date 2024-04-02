@@ -77,8 +77,13 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname, "dist/js"),
-        filename: "[name].js",
+        filename: "[name].bundle.js",
     },
+    optimization: {
+        splitChunks: {
+            chunks: 'all',
+        }
+    }
 };
 
 function getHtmlPlugins(chunks) {

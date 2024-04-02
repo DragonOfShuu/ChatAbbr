@@ -1,7 +1,7 @@
 import { useHotkeyContext, useHotkeyDispatchContext } from "../HotkeyDataContext"
 import { HotkeyEditor } from "./HotkeyEditor"
 import SpecialButton from "@/components/SpecialButton"
-import OutputEditor from "./OutputEditor"
+import OutputEditor from "./outputLexical/OutputEditor"
 import TabbedPager from "@/components/TabbedPager"
 
 type Props = {
