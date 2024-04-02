@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 // import styles from './AbbrEditor.module.sass';
 
 import PencilIcon from '@/icons/Pencil.svg';
@@ -43,60 +43,26 @@ const HotkeyToolbar = (props: {className?: string}) => {
     const hotkeyDispatch = useHotkeyDispatchContext();
     const hotkeyData = useHotkeyContext();
 
-    const [hotkeyText, setHotkeyText] = useState<string>('')
-
-    const toolBarInput = useRef<HTMLInputElement>(null)
-
-    const [showError, setShowError] = useState<boolean>(false)
-    const [errorTimer, setErrorTimer] = useState<number|undefined>(undefined)
-
-    const exclaimWrongChar = () => {
-        setShowError(true);
-        clearTimeout(errorTimer)
-
-        setErrorTimer(setTimeout(()=> {
-            setErrorTimer(undefined)
-            setShowError(false)
-        }, 5000))
-    }
-
-    const setAndCheckHotText = (newText: string) => {
-        if (textAllowed(newText)) {
-            setHotkeyText(newText)
-        } else 
-            exclaimWrongChar()
-    }
+    const toolBarInput = useRef<HotkeyInputRef>(null)
 
     const installHotkey = () => {
+        const text = toolBarInput.current?.value??'';
         if   ( !hotkeyData.currentHotkeyEdit 
-            || hotkeyData.currentHotkeyEdit?.hotkeys.includes(hotkeyText)
-            || !canInstallHotkey(hotkeyText)) return 
+            || hotkeyData.currentHotkeyEdit?.hotkeys.includes(text)
+            || !canInstallHotkey(text)) return 
         
         hotkeyDispatch({ 
             type: 'updateCurrentEdit', 
-            hotkey: { hotkeys: [hotkeyText, ...hotkeyData.currentHotkeyEdit.hotkeys] } 
+            hotkey: { hotkeys: [text, ...hotkeyData.currentHotkeyEdit.hotkeys] } 
         })
 
-        setHotkeyText('')
+        toolBarInput.current?.setValue('')
         toolBarInput.current?.focus()
     }
 
     return (
         <div className={`flex flex-row gap-2 justify-evenly px-2 py-1 ${props.className}`}>
-            <div className={`relative inline-block grow min-w-2`}>
-                <input 
-                    onChange={(e)=> setAndCheckHotText(e.target.value)}
-                    value={hotkeyText}
-                    className={`rounded-md px-3 py-2 text-lg w-full ${showError?'rounded-b-none':''}`}
-                    placeholder={`New Hotkey...`}
-                    ref={toolBarInput}
-                    onKeyDown={(e) => { if (e.key==="Enter") installHotkey() }}
-                />
-                <div 
-                    className={`absolute ${showError?'scale-y-100':'scale-y-0'} rounded-b-md transition-transform origin-top p-2 bg-rose-300 border-rose-400 w-full border-2 z-10`}>
-                    Hotkeys cannot include certain characters, and spaces must be at the end
-                </div>
-            </div>
+            <HotkeyInput installHotkey={installHotkey} ref={toolBarInput} />
             <SpecialButton Image={PlusIcon} alt={`Add New Hotkey`} onClick={installHotkey} />
         </div>
     )
@@ -106,15 +72,10 @@ const HotkeyElement = (props: { text: string, hotkeyArray: string[] }) => {
     const hotkeyData = useHotkeyContext();
     const dispatch = useHotkeyDispatchContext();
 
-    const [hotkeyText, setHotkeyText] = useState<string>(props.text);
     const [isEditing, setEditing] = useState<boolean>(false);
+    const inputRef = useRef<HotkeyInputRef>(null)
 
     const svgButtonClassname = "lg:h-3/4 h-1/2 w-auto"
-
-    useEffect(() => {
-        setHotkeyText(props.text);
-        setEditing(false);
-    }, [props.text]);
 
     const deleteThis = () => {
         dispatch({
@@ -126,39 +87,34 @@ const HotkeyElement = (props: { text: string, hotkeyArray: string[] }) => {
     const cancelEdits = () => {
         if (!isEditing) return;
         console.log("Cancelling hotkey edits...");
-        setHotkeyText(props.text);
         setEditing(false);
     };
 
 
     const installEdits = () => {
         // If there is no change, stop editing
-        if (hotkeyText === props.text) {
+        if (inputRef.current===null) return
+        
+        if (inputRef.current.value === props.text) {
             setEditing(false);
             return;
         }
-
-        if (!canInstallHotkey(hotkeyText)) return
-
+        
+        if (!canInstallHotkey(inputRef.current.value)) return
+        
         console.log("Installing hotkey edits...");
         dispatch({
             type: 'updateCurrentEdit',
             hotkey: {
                 hotkeys: props.hotkeyArray
-                    .filter((h) => h !== hotkeyText)
+                    .filter((h) => h !== inputRef.current?.value)
                     .map(
-                        (h) => h === props.text ? hotkeyText : h
+                        (h) => h === props.text ? inputRef.current?.value??'' : h
                     )
             }
         });
 
         setEditing(false);
-    };
-
-    const inputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newText = e.target.value;
-        if (textAllowed(newText))
-            setHotkeyText(newText);
     };
 
     if (hotkeyData.currentHotkeyEdit === undefined) return <>No Data</>;
@@ -172,11 +128,12 @@ const HotkeyElement = (props: { text: string, hotkeyArray: string[] }) => {
             {
                 isEditing ?
                 <>
-                    <input
+                    {/* <input
                         onChange={inputChanged}
                         value={hotkeyText}
                         className={`h-full grow px-2 py-1 rounded-md`}
-                        onKeyDown={(e)=> { if (e.key==="Enter") installEdits() }} />
+                        onKeyDown={(e)=> { if (e.key==="Enter") installEdits() }} /> */}
+                    <HotkeyInput installHotkey={installEdits} text={props.text} ref={inputRef} />
 
                     <div className={`w-2`} />
 
@@ -195,3 +152,82 @@ const HotkeyElement = (props: { text: string, hotkeyArray: string[] }) => {
         </div>
     );
 };
+
+type HotkeyInputRef = {
+    focus: ()=>any
+    setValue: (x: string)=>any
+    value: string
+}
+const HotkeyInput = forwardRef(
+        (
+            {installHotkey, text, ...props}: {
+                text?: string,
+                installHotkey: ()=> any,
+            }, 
+
+            ref: React.ForwardedRef<HotkeyInputRef>
+        ) => {
+
+    const [showError, setShowError] = useState<boolean>(false)
+    const [errorTimer, setErrorTimer] = useState<number|undefined>(undefined)
+
+    const [hotkeyText, setHotkeyText] = useState(text??'');
+
+    const inputRef = useRef<HTMLInputElement>(null);
+    
+    useImperativeHandle(ref, ()=> {
+        return {
+            focus: ()=> inputRef.current?.focus(),
+            setValue: (text: string) => textAllowed(text)?setHotkeyText(text):null,
+            value: hotkeyText
+        }
+    }, [hotkeyText])
+
+    useEffect(()=> {
+        setHotkeyText(text??'')
+    }, [text]);
+
+    useEffect(()=> {
+        if (errorTimer===undefined) return;
+        clearTimeout(errorTimer);
+        setErrorTimer(undefined)
+
+        setShowError(false) 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [hotkeyText])
+
+    const exclaimWrongChar = () => {
+        setShowError(true);
+        clearTimeout(errorTimer)
+
+        setErrorTimer(setTimeout(()=> {
+            setErrorTimer(undefined)
+            setShowError(false)
+        }, 5000))
+    }
+
+    const setAndCheckHotText = (newText: string) => {
+        if (textAllowed(newText)) {
+            setHotkeyText(newText)
+        } else 
+            exclaimWrongChar()
+    }
+
+    return (
+        <div className={`relative inline-block grow min-w-2`}>
+            <input
+                {...props}
+                onChange={(e)=> setAndCheckHotText(e.target.value)}
+                value={hotkeyText}
+                className={`rounded-md px-3 py-2 text-lg w-full ${showError?'rounded-b-none':''}`}
+                placeholder={`New Hotkey...`}
+                ref={inputRef}
+                onKeyDown={(e) => { if (e.key==="Enter") installHotkey() }}
+            />
+            <div 
+                className={`absolute ${showError?'scale-y-100':'scale-y-0'} rounded-b-md transition-transform origin-top p-2 bg-rose-300 border-rose-400 w-full border-2 z-10 text-sm`}>
+                Hotkeys cannot include certain characters, and spaces must be at the end
+            </div>
+        </div>
+    )
+})
