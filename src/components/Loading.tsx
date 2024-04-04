@@ -7,7 +7,7 @@ type Props = {
 
 const LoadingComp = (props: Props) => {
     return (
-        <div className={`${props.className??''}`}>
+        <div className={`${props.className??''} flex place-content-center`}>
             <div className={`${styles.loadingCircle}`} />
         </div>
     )

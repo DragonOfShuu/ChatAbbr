@@ -44,40 +44,38 @@ export default function ToolbarPlugin() {
 
     useEffect(() => {
         return mergeRegister(
+            editor.registerUpdateListener(({editorState}) => {
+                editorState.read(() => {
+                    updateToolbar();
+                });
+            }),
 
-        editor.registerUpdateListener(({editorState}) => {
-            editorState.read(() => {
-            updateToolbar();
-            });
-        }),
+            editor.registerCommand(
+                SELECTION_CHANGE_COMMAND,
+                (_payload, newEditor) => {
+                    updateToolbar();
+                    return false;
+                },
+                LowPriority,
+            ),
 
-        editor.registerCommand(
-            SELECTION_CHANGE_COMMAND,
-            (_payload, newEditor) => {
-            updateToolbar();
-            return false;
-            },
-            LowPriority,
-        ),
+            editor.registerCommand(
+                CAN_UNDO_COMMAND,
+                (payload) => {
+                    setCanUndo(payload);
+                    return false;
+                },
+                LowPriority,
+            ),
 
-        editor.registerCommand(
-            CAN_UNDO_COMMAND,
-            (payload) => {
-            setCanUndo(payload);
-            return false;
-            },
-            LowPriority,
-        ),
-
-        editor.registerCommand(
-            CAN_REDO_COMMAND,
-            (payload) => {
-            setCanRedo(payload);
-            return false;
-            },
-            LowPriority,
-        ),
-
+            editor.registerCommand(
+                CAN_REDO_COMMAND,
+                (payload) => {
+                    setCanRedo(payload);
+                    return false;
+                },
+                LowPriority,
+            ),
         );
     }, [editor, updateToolbar]);
 

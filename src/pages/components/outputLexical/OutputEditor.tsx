@@ -16,8 +16,19 @@ import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import ToolbarPlugin from './plugins/ToolbarPlugin';
 
+import s from './Theme.module.sass'
+import UpdateHotkeyPlugin from './plugins/UpdateHotkeyPlugin';
+
 const theme = {
     // Theme styling goes here
+    paragraph: s.paragraph,
+    text: {
+        bold: s.bold,
+        italic: s.italicText,
+        strikethrough: s.strikethrough,
+        underline: s.underline,
+        underlineStrikethrough: s.underlineStrikethrough
+    }
 }
 
 // Catch any errors that occur during Lexical updates and log them
@@ -44,12 +55,13 @@ function OutputEditor(props: Props) {
                 <div className={`size-full flex flex-col items-stretch`}>
                     <ToolbarPlugin />
                     <RichTextPlugin
-                        contentEditable={<ContentEditable className={'grow rounded-lg border-2 border-fuchsia-400 focus:outline-fuchsia-500 outline-2 p-2'} />}
+                        contentEditable={<ContentEditable className={'h-full max-h-full rounded-lg border-2 border-fuchsia-400 focus:outline-fuchsia-500 outline-2 p-2'} />}
                         // placeholder={<div>Enter some text...</div>}
                         placeholder={<></>}
                         ErrorBoundary={LexicalErrorBoundary} />
 
                     <HistoryPlugin />
+                    <UpdateHotkeyPlugin />
                 </div>
             </div>
         </LexicalComposer>
