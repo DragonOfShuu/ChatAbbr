@@ -3,6 +3,7 @@ import { HotkeyEditor } from "./HotkeyEditor"
 import SpecialButton from "@/components/SpecialButton"
 import OutputEditor from "./outputLexical/OutputEditor"
 import TabbedPager from "@/components/TabbedPager"
+import useWindowDimensions from "@/components/hooks/UseWindowDimensions"
 
 type Props = {
     className: string
@@ -11,6 +12,8 @@ type Props = {
 const AbbrEditor = (props: Props) => {
     const hotkeyData = useHotkeyContext()
     const hotkeyDataDispatch = useHotkeyDispatchContext()
+
+    const {width} = useWindowDimensions();
 
     if (hotkeyData.currentHotkeyEdit===undefined) 
         return (
@@ -35,17 +38,20 @@ const AbbrEditor = (props: Props) => {
                             onChange={(e)=> hotkeyDataDispatch({type: 'updateCurrentEdit', hotkey: {name: e.currentTarget.value}})}
                             value={hotkeyData.currentHotkeyEdit.name} /> 
 
-                        <div className={`grow 2xl:px-16 py-5 md:flex flex-row gap-3 hidden `}>
-                            <HotkeyEditor className={`w-1/3 h-full`} />
-                            <OutputEditor className={`w-1/2 grow`} />
-                        </div>
-
-                        <TabbedPager className={`grow pb-3 block md:hidden`}>
-                            {{
-                                "Hotkeys": <HotkeyEditor className={`w-full h-full`} />,
-                                "Result": <OutputEditor className={`w-full h-full`} />,
-                            }}
-                        </TabbedPager>
+                        {
+                            width > 768 ?
+                                <div className={`grow 2xl:px-16 py-5 flex flex-row gap-3`}>
+                                    <HotkeyEditor className={`w-1/3 h-full`} />
+                                    <OutputEditor className={`w-1/2 grow`} />
+                                </div>
+                                :
+                                <TabbedPager className={`grow pb-3`}>
+                                    {{
+                                        "Hotkeys": <HotkeyEditor className={`w-full h-full`} />,
+                                        "Result": <OutputEditor className={`w-full h-full`} />,
+                                    }}
+                                </TabbedPager>
+                        }
                     </div>
                 </div>
 

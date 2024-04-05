@@ -3,13 +3,26 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HTMLPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin")
 
+const dotenv = require('dotenv').config({
+    path: path.join(__dirname, 'build.env')
+});
+
+const env = dotenv.parsed;
+if (env===undefined) 
+    throw Error("Environment file not found (build.env)")
+
+console.log(env)
+
 module.exports = {
     entry: {
         popup: "./src/popup/index.tsx",
         pages: "./src/pages/index.tsx",
         content: "./src/injection/index.ts"
     },
-    mode: "production",
+    mode: env.DEVELOPMENT??true ? "development" : "production",
+    // Required because chrome extensions can't use "eval"
+    // Most fast build source maps unfortunately use "eval"
+    devtool: env.DEVELOPMENT??true ? 'cheap-source-map' : undefined, 
     module: {
         rules: [
             {
@@ -28,7 +41,7 @@ module.exports = {
                 test: /\.s[ac]ss$/i,
                 use: [
                     // "style-loader",
-                    MiniCssExtractPlugin.loader,
+                    env.DEVELOPMENT??true ? "style-loader" : MiniCssExtractPlugin.loader,
                     {
                         loader: "css-loader",
                         options: {
@@ -79,7 +92,7 @@ module.exports = {
         path: path.join(__dirname, "dist/js"),
         filename: "[name].bundle.js",
     },
-    optimization: {
+    optimization: env.DEVELOPMENT??true ? {} : {
         splitChunks: {
             chunks: 'all',
         }

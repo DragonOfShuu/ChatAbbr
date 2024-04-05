@@ -78,7 +78,8 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
                 id: id,
                 hotkeys: ["-hw"],
                 name: "New Template",
-                output: "Hello World! (Thankfully not homework)",
+                // output: "Hello World! (Thankfully not homework)",
+                output: '',
                 options: {}
             }
             newState.currentHotkeyEdit = newHotkey;
