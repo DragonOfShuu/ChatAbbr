@@ -53,15 +53,19 @@ function saveToBrowser(oldState: hotkeyData, newState: hotkeyData) {
 }
 
 function hotkeyReducer(state: hotkeyData, action: HotkeyAction|HotkeyAction[]): hotkeyData {
-    const newState = {...state}
-    const actions = Array.isArray(action)?action:[action]
+    let newState = {...state}
+    const actions = Array.isArray(action)?[...action]:[action]
     let changes = false;
+
+    // console.log('newState Before: ', JSON.parse(JSON.stringify(newState)))
     actions.forEach((x)=> {
         let value = hotkeyApi(newState, x);
 
         if (value===false) return;
         changes = true;
+        newState = value;
     })
+    // console.log("newState: ", JSON.parse(JSON.stringify(newState)))
 
     // Save Templates
     saveToBrowser(state, newState)
@@ -69,7 +73,7 @@ function hotkeyReducer(state: hotkeyData, action: HotkeyAction|HotkeyAction[]): 
     // If there are no changes, let's *not* update the entire UI
     return changes?newState:state;
 }
-
+ 
 function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false {
     switch (action.type) {
         case 'create': // Create new hotkey and add it to the currentEdit
@@ -88,7 +92,7 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
             
         
         case 'change': // Change a hotkey by giving a replacement. Will also allow you to add a hotkey that doesn't exist
-            newState.hotkeyList = changeOrUnshift(newState.hotkeyList, action.replacement.id, action.replacement)
+            newState.hotkeyList = changeOrUnshift({...newState.hotkeyList}, action.replacement.id, {...action.replacement})
             return newState
 
         
@@ -124,10 +128,10 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
         
         case "setHotkeys": // Set entire hotkey list
             if (!Array.isArray(action.hotkeys)) 
-                newState.hotkeyList = action.hotkeys
+                newState.hotkeyList = {...action.hotkeys}
             else {
                 const hotkeyObject: {[id: string]: AbbrType} = {}
-                action.hotkeys.forEach((h)=> hotkeyObject[h.id] = h)
+                action.hotkeys.forEach((h)=> hotkeyObject[h.id] = {...h})
                 newState.hotkeyList = hotkeyObject
             }
             
@@ -135,34 +139,39 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
 
         
         case "changeEdits": // Set whether the currentEdit has edits
-            newState.hasEdits = {...newState.hasEdits, [action.hotkey.id]: action.hotkey}
+            newState.hasEdits = {...{...newState.hasEdits}, [action.hotkey.id]: {...action.hotkey}}
             return newState;
 
 
         case "discardEdits":
+            const hasEdits1 = {...newState.hasEdits}
             action.ids.forEach((id)=> 
-                delete newState.hasEdits[id]
+                delete hasEdits1[id]
             );
-            newState.hasEdits = {...newState.hasEdits} // New object to trigger react
+            newState.hasEdits = hasEdits1
             return newState;
 
         
         case "saveEdits":
+            // IT'S HOW WE ARE CLEARING THE EDITS
             // const edits: string[] = newState.hasEdits[action.id]
-            const editIds1: string[] = Array.isArray(action.id)?action.id:[action.id]
+            const hasEdits = {...newState.hasEdits}
+            const editIds1: string[] = Array.isArray(action.id)?[...action.id]:[action.id]
             const edits: AbbrType[] = []
             editIds1.forEach((e)=> {
-                let currentEdit = newState.hasEdits[e]
-                if (currentEdit) edits.push(currentEdit)
+                let currentEdit = hasEdits[e]
+                if (currentEdit) edits.push({...currentEdit})
             })
             if (!edits) return false;
 
             edits.forEach((e)=> {
                 newState.hotkeyList = changeOrUnshift(newState.hotkeyList, e.id, e)
-                delete newState.hasEdits[e.id]
+                delete hasEdits[e.id]
             })
-            newState.hasEdits = {...newState.hasEdits} // Trigger react
-
+            newState.hasEdits = hasEdits // Trigger react
+            newState.hotkeyList = {...newState.hotkeyList} // Because development mode is bugged
+            
+            // console.log(newState)
             return newState;
 
         
@@ -174,11 +183,11 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
 
 function changeOrUnshift(object: any, id: string, data: any) {
     if (object[id]) {
-        object[id] = data
+        object[id] = {...data}
         return {...object}
     }
 
-    return { [id]: data, ...object }
+    return { [id]: {...data}, ...object }
 }
 
 

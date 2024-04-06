@@ -11,7 +11,6 @@ const OnChangePlugin = ({ onChange }: Props) => {
 
     useEffect(() => {
         return editor.registerUpdateListener(({editorState}) => {
-            console.log("A change has been registered.")
             onChange(editorState);
         });
     }, [editor, onChange]);

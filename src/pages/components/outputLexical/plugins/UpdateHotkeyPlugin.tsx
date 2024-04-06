@@ -4,7 +4,6 @@ import { useHotkeyContext, useHotkeyDispatchContext } from "@/pages/HotkeyDataCo
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { useEffect, useState } from "react"
-// import { createEmptyEditorState } from "lexical/LexicalEditorState"
 
 type Props = {
 
@@ -17,22 +16,28 @@ const UpdateHotkeyPlugin = (props: Props) => {
     const [lexicalEditor] = useLexicalComposerContext();
     const [editorState, setEditorState] = useState<string>();
 
+    const clearEditorAndState = () => {
+        lexicalEditor.update(()=> {
+            $getRoot().clear();
+        }, {discrete: true}) // Discrete to make the update instant
+        setEditorState( JSON.stringify(lexicalEditor.getEditorState().toJSON()) );
+    }
+
     useEffect(()=> {
         // Closes any loop
         if (hotkeyData.currentHotkeyEdit?.output === editorState) return
         if (hotkeyData.currentHotkeyEdit?.output===undefined) return
         
         let editorJSON = hotkeyData.currentHotkeyEdit.output;
-        if (!editorJSON) {
-            lexicalEditor.update(()=> {
-                $getRoot().clear();
-            }, {discrete: true}) // Discrete to make the update instant
-            setEditorState( JSON.stringify(lexicalEditor.getEditorState().toJSON()) );
-            return;
+
+        try {
+            const newEditorState = lexicalEditor.parseEditorState(editorJSON)
+            lexicalEditor.setEditorState(newEditorState);
+            setEditorState(editorJSON)
+        // In case the EditorJSON is corrupted or empty
+        } catch (e) {
+            clearEditorAndState();
         }
-        setEditorState(editorJSON)
-        const newEditorState = lexicalEditor.parseEditorState(editorJSON)
-        lexicalEditor.setEditorState(newEditorState);
         
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [hotkeyData.currentHotkeyEdit])
@@ -40,7 +45,7 @@ const UpdateHotkeyPlugin = (props: Props) => {
     useEffect(()=> {
         if (hotkeyData.currentHotkeyEdit?.output === editorState) return
         if (!editorState) return;
-        
+
         hotkeyDataDispatch({type: 'updateCurrentEdit', hotkey: {output: editorState}})
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [editorState, hotkeyDataDispatch])
