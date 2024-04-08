@@ -18,6 +18,8 @@ import ToolbarPlugin from './plugins/ToolbarPlugin';
 
 import s from './Theme.module.sass'
 import UpdateHotkeyPlugin from './plugins/UpdateHotkeyPlugin';
+import PlaceholderPlugin from './plugins/PlaceholderPlugin';
+import PlaceholderNode from './nodes/PlaceholderNode';
 
 const theme = {
     // Theme styling goes here
@@ -45,6 +47,7 @@ type Props = {
 function OutputEditor(props: Props) {
     const initialConfig = {
         namespace: 'OutputEditor',
+        nodes: [PlaceholderNode],
         theme,
         onError,
     };
@@ -62,6 +65,7 @@ function OutputEditor(props: Props) {
 
                     <HistoryPlugin />
                     <UpdateHotkeyPlugin />
+                    <PlaceholderPlugin />
                 </div>
             </div>
         </LexicalComposer>
