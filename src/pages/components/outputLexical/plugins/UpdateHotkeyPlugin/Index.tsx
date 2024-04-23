@@ -1,5 +1,5 @@
 import { $getRoot, EditorState } from "lexical"
-import OnChangePlugin from "./OnChange"
+import OnChangePlugin from "../OnChangePlugin/Index"
 import { useHotkeyContext, useHotkeyDispatchContext } from "@/pages/HotkeyDataContext"
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"

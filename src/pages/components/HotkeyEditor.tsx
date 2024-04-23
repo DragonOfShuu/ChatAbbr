@@ -169,7 +169,7 @@ const HotkeyInput = forwardRef(
         ) => {
 
     const [showError, setShowError] = useState<boolean>(false)
-    const [errorTimer, setErrorTimer] = useState<number|undefined>(undefined)
+    const [errorTimer, setErrorTimer] = useState<NodeJS.Timeout|undefined>(undefined)
 
     const [hotkeyText, setHotkeyText] = useState(text??'');
 

@@ -14,11 +14,11 @@ import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin';
 import {ContentEditable} from '@lexical/react/LexicalContentEditable';
 import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
-import ToolbarPlugin from './plugins/ToolbarPlugin';
+import ToolbarPlugin from './plugins/ToolbarPlugin/Index';
 
 import s from './Theme.module.sass'
-import UpdateHotkeyPlugin from './plugins/UpdateHotkeyPlugin';
-import PlaceholderPlugin from './plugins/PlaceholderPlugin';
+import UpdateHotkeyPlugin from './plugins/UpdateHotkeyPlugin/Index';
+import PlaceholderPlugin from './plugins/PlaceholderPlugin/Index';
 import PlaceholderNode from './nodes/PlaceholderNode';
 
 const theme = {

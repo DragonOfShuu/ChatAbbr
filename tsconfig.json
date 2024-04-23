@@ -25,7 +25,7 @@
     // "isolatedModules": false,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["chrome"]
+    "types": ["chrome", "node"]
   },
   "include": [
     "src",

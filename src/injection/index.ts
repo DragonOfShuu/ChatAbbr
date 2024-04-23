@@ -3,8 +3,9 @@ import findAbbr from './checkForAbbr';
 import styles from './funnyStyles.module.sass'
 import { charAllowed, maxHotkeySize } from '../globalCharacterRules';
 import insertText from './textManipulation';
+import DevConsole from '@/development/DevConsole';
 
-console.log("Script was injected.")
+DevConsole.log("Script was injected.")
 
 let currentlyTyped = ''
 let currentKeysDown: {time: number, key: string}[] = []
@@ -30,7 +31,7 @@ const isTextareaOrInput = (element: Element | null): null|Element => {
     if (tagName === "IFRAME") {
         const newEle = element as HTMLIFrameElement
         if (!newEle.contentWindow) {
-            console.log('Darn it, contentWindow does not exist')
+            DevConsole.log('Darn it, contentWindow does not exist')
             return null;
         }
         return isTextareaOrInput(newEle.contentWindow?.document.activeElement)
@@ -47,7 +48,7 @@ const listenActiveElement = (callback: any) => {
     const focusChange = () => {
         previousActiveElement = lastActiveElement;
         lastActiveElement = document.activeElement;
-        console.log(lastActiveElement?.tagName, lastActiveElement)
+        DevConsole.log(lastActiveElement?.tagName, lastActiveElement)
 
         lastActiveElement = isTextareaOrInput(lastActiveElement)
         // Check if element is textarea or input
@@ -99,7 +100,7 @@ const keyUp = async (e: KeyboardEvent) => {
     if (Date.now() - popCurrentKey(e.key).time > 1000) 
         return;
 
-    console.log(`Key up detected. Key: ${e.key}`)
+    DevConsole.log(`Key up detected. Key: ${e.key}`)
     const target = e.target as HTMLInputElement|HTMLTextAreaElement|HTMLDivElement;
 
     if (e.key.toLowerCase()==="shift") return
@@ -117,7 +118,7 @@ const keyUp = async (e: KeyboardEvent) => {
     currentlyTyped = normalizeTypedSize(currentlyTyped, maxHotkeySize) // Slice start of currentlyTyped to fit size requirements
 
     currentlyTyped+=e.key;
-    console.log('Currently typed: ', currentlyTyped)
+    DevConsole.log('Currently typed: ', currentlyTyped)
 
     const abbr = await findAbbr(currentlyTyped)
     if (abbr) {

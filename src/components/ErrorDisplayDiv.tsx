@@ -63,7 +63,7 @@ const ErrorDisplayDiv = (props: Props) => {
 }
 
 const ErrorDisplay = ({error, ...props}: {error: ErrorDataType}) => {
-    const [errorTimeout, setErrorTimeout] = useState<number|undefined>(undefined);
+    const [errorTimeout, setErrorTimeout] = useState<NodeJS.Timeout|undefined>(undefined);
     const timeoutRan = useRef<boolean>(false);
 
     const {errorDisplayDispatch} = useErrorDisplay()
@@ -79,6 +79,7 @@ const ErrorDisplay = ({error, ...props}: {error: ErrorDataType}) => {
         errorDisplayDispatch({ type: 'deleteError', errorId: error.id })
     }
 
+    // TODO: CREATE A NICE TIMEOUT HOOK
     useEffect(()=> {
         if (error.destructionTime===0) return
         setErrorTimeout(

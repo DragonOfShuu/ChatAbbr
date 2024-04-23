@@ -1,3 +1,4 @@
+import DevConsole from "@/development/DevConsole"
 
 function replicateKeyPresses(element: HTMLElement, text: string, deleteCount?: number) {
     const keyPress = (key: string, charCode?: number) => ["keydown", "keyup"].forEach((eventType) => {
@@ -26,10 +27,10 @@ function replicateKeyPresses(element: HTMLElement, text: string, deleteCount?: n
 function insertTextAtContentDiv(element: HTMLDivElement, text: string, deleteCount?: number) {
     let sel = window.getSelection();
     if (!sel) {
-        console.log("Selection was null...")
+        DevConsole.log("Selection was null...")
         return
     }
-    console.log(sel.focusNode);
+    DevConsole.log(sel.focusNode);
 
     if (sel.rangeCount===0) {
         replicateKeyPresses(element, text, deleteCount);
@@ -68,7 +69,7 @@ function insertTextInInput(element: HTMLInputElement|HTMLTextAreaElement, text: 
     const endPos = element.selectionEnd;
 
     if (!(startPos&&endPos)) {
-        console.log("start and end was null")
+        DevConsole.log("start and end was null")
         return
     }
 
@@ -82,8 +83,8 @@ function insertTextInInput(element: HTMLInputElement|HTMLTextAreaElement, text: 
 }
 
 function insertText(element: HTMLInputElement|HTMLTextAreaElement|HTMLDivElement, text: string, deleteCount?: number) {
-    console.log("Inserting text into: ", element)
-    console.log("the element is typeof: ", typeof element)
+    DevConsole.log("Inserting text into: ", element)
+    DevConsole.log("the element is typeof: ", typeof element)
     if (element.tagName === "DIV") insertTextAtContentDiv(element as HTMLDivElement, text, deleteCount)
     else insertTextInInput(element as HTMLInputElement|HTMLTextAreaElement, text, deleteCount)
 }
