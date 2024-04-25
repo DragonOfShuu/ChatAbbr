@@ -1,6 +1,7 @@
 
 const inDevMode = () => {
-    return process.env.NODE_ENV === 'production';
+    // console.log("Process.env: ", process.env.NODE_ENV)
+    return process.env.NODE_ENV !== 'production';
 }
 
 export default inDevMode;

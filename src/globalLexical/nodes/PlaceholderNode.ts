@@ -1,4 +1,4 @@
-import { $applyNodeReplacement, EditorConfig, LexicalNode, SerializedTextNode, TextNode } from "lexical";
+import { $applyNodeReplacement, DOMExportOutput, EditorConfig, LexicalEditor, LexicalNode, SerializedTextNode, TextNode } from "lexical";
 import {addClassNamesToElement} from '@lexical/utils';
 
 export default class PlaceholderNode extends TextNode {
@@ -19,10 +19,8 @@ export default class PlaceholderNode extends TextNode {
     }
   
     createDOM(config: EditorConfig): HTMLElement {
-        // console.log("Attempted to run CreateDom?")
         const textElement = super.createDOM(config);
         addClassNamesToElement(textElement, "border-rose-600 bg-rose-500 hover:bg-rose-400 text-white rounded-full px-2 py-1")
-        // console.log("Ran createdom")
         return textElement;
     }
   
@@ -39,7 +37,7 @@ export default class PlaceholderNode extends TextNode {
     // }
 
     static importJSON(serializedNode: SerializedTextNode): PlaceholderNode {
-        console.log("Imported JSON")
+        // console.log("Imported JSON")
         const node = $createPlaceholderNode(serializedNode.text);
         node.setDetail(serializedNode.detail)
         node.setFormat(serializedNode.format)
@@ -54,6 +52,11 @@ export default class PlaceholderNode extends TextNode {
             ...super.exportJSON(),
             type: this.getType()
         }
+    }
+
+    exportDOM(editor: LexicalEditor): DOMExportOutput {
+        const domStuff = super.exportDOM(editor);
+        return domStuff;
     }
 
     canInsertTextBefore(): boolean {

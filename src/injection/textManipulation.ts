@@ -1,4 +1,5 @@
 import DevConsole from "@/development/DevConsole"
+import { lexicalStateToHtml, lexicalStateToText } from "./lexicalConversions"
 
 function replicateKeyPresses(element: HTMLElement, text: string, deleteCount?: number) {
     const keyPress = (key: string, charCode?: number) => ["keydown", "keyup"].forEach((eventType) => {
@@ -50,6 +51,8 @@ function insertTextAtContentDiv(element: HTMLDivElement, text: string, deleteCou
     while ( (node = el.firstChild) ) {
         lastNode = frag.appendChild(node);
     }
+    DevConsole.log("Document fragment: ", frag)
+    DevConsole.log("Injection element: ", el)
     range.insertNode(frag);
     replicateKeyPresses(element, text, deleteCount)
 
@@ -82,11 +85,16 @@ function insertTextInInput(element: HTMLInputElement|HTMLTextAreaElement, text: 
     replicateKeyPresses(element, text, deleteCount)
 }
 
-function insertText(element: HTMLInputElement|HTMLTextAreaElement|HTMLDivElement, text: string, deleteCount?: number) {
+function insertText(element: HTMLInputElement|HTMLTextAreaElement|HTMLDivElement, lexicalState: string, deleteCount?: number) {
     DevConsole.log("Inserting text into: ", element)
     DevConsole.log("the element is typeof: ", typeof element)
-    if (element.tagName === "DIV") insertTextAtContentDiv(element as HTMLDivElement, text, deleteCount)
-    else insertTextInInput(element as HTMLInputElement|HTMLTextAreaElement, text, deleteCount)
+    if (element.tagName === "DIV") {
+        const text = lexicalStateToHtml(lexicalState)
+        insertTextAtContentDiv(element as HTMLDivElement, text, deleteCount)
+    } else {
+        const text = lexicalStateToText(lexicalState)
+        insertTextInInput(element as HTMLInputElement|HTMLTextAreaElement, text, deleteCount)
+    }
 }
 
 export default insertText;

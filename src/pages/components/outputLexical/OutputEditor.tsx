@@ -14,30 +14,19 @@ import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin';
 import {ContentEditable} from '@lexical/react/LexicalContentEditable';
 import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
-import ToolbarPlugin from './plugins/ToolbarPlugin/Index';
+import ToolbarPlugin from '../../../globalLexical/plugins/ToolbarPlugin/Index';
 
-import s from './Theme.module.sass'
-import UpdateHotkeyPlugin from './plugins/UpdateHotkeyPlugin/Index';
-import PlaceholderPlugin from './plugins/PlaceholderPlugin/Index';
-import PlaceholderNode from './nodes/PlaceholderNode';
-
-const theme = {
-    // Theme styling goes here
-    paragraph: s.paragraph,
-    text: {
-        bold: s.bold,
-        italic: s.italicText,
-        strikethrough: s.strikethrough,
-        underline: s.underline,
-        underlineStrikethrough: s.underlineStrikethrough
-    }
-}
+import UpdateHotkeyPlugin from '../../../globalLexical/plugins/UpdateHotkeyPlugin/Index';
+import PlaceholderPlugin from '../../../globalLexical/plugins/PlaceholderPlugin/Index';
+import PlaceholderNode from '../../../globalLexical/nodes/PlaceholderNode';
+import { theme } from '@/globalLexical/GlobalLexicalSettings';
+import DevConsole from '@/development/DevConsole';
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
 function onError(error: Error) {
-    console.error(error);
+    DevConsole.error(error);
 }
 
 type Props = {
@@ -59,7 +48,6 @@ function OutputEditor(props: Props) {
                     <ToolbarPlugin />
                     <RichTextPlugin
                         contentEditable={<ContentEditable className={'h-full max-h-full rounded-lg border-2 border-fuchsia-400 focus:outline-fuchsia-500 outline-2 p-2'} />}
-                        // placeholder={<div>Enter some text...</div>}
                         placeholder={<></>}
                         ErrorBoundary={LexicalErrorBoundary} />
 

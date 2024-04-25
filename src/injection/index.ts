@@ -1,9 +1,10 @@
 import { AbbrType } from '../database/abbrAPI';
 import findAbbr from './checkForAbbr';
-import styles from './funnyStyles.module.sass'
+// import styles from './funnyStyles.module.sass'
 import { charAllowed, maxHotkeySize } from '../globalCharacterRules';
-import insertText from './textManipulation';
+import insertLexicalState from './textManipulation';
 import DevConsole from '@/development/DevConsole';
+// import { lexicalStateToText } from './lexicalConversions';
 
 DevConsole.log("Script was injected.")
 
@@ -73,8 +74,9 @@ const editTextbox = (
     target: HTMLInputElement|HTMLTextAreaElement|HTMLDivElement, 
     data: {abbr: AbbrType, hotkey: string}
 ) => {
-    insertText(target, data.abbr.output, data.hotkey.length)
-    target.classList.add(styles.rainbow)
+    // const output = lexicalStateToText(data.abbr.output)
+    insertLexicalState(target, data.abbr.output, data.hotkey.length)
+    // target.classList.add(styles.rainbow)
 }
 
 const normalizeTypedSize = (typed: string, limit: number) => {
