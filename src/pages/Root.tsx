@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import AbbrSidebar from './components/AbbrSidebar';
 import AbbrEditor from './components/AbbrEditor';
 
 import useWindowDimensions from '@/components/hooks/UseWindowDimensions';
 import { useHotkeyContext } from './HotkeyDataContext';
+import useUnload from '@/components/hooks/UseUnload';
+import DevConsole from '@/development/DevConsole';
 
 const Root = () => {
     // If sidebar is absolute expanded or not
@@ -30,22 +32,16 @@ const Root = () => {
         setExpanded(userExpand??false)
     }, [width, userExpand])
 
-    useEffect(()=> {
-        const onUnload = (e: BeforeUnloadEvent) => {
-            if (hotkeyData.hasEdits && Object.keys(hotkeyData.hasEdits).length) {
-                console.log(`Hotkey changes: `, hotkeyData.hasEdits)
-                let exitConfirmation = `Are you sure you want to leave before saving changes? (changes will be lost)`;
+    const onUnload = useCallback(()=> {
+        DevConsole.log("Running onUnload. hasEdits: ", hotkeyData.hasEdits)
+        if (!hotkeyData.hasEdits || !Object.keys(hotkeyData.hasEdits).length)
+            return
 
-                (e || window.event).returnValue = exitConfirmation; //Gecko + IE
-                return exitConfirmation; //Gecko + Webkit, Safari, Chrome etc.
-            }
-        }
+        console.log(`Hotkey changes: `, hotkeyData.hasEdits)
+        return `Are you sure you want to leave before saving changes? (changes will be lost)`;
+    }, [hotkeyData])
 
-        window.addEventListener('beforeunload', onUnload)
-        return ()=> window.removeEventListener('beforeunload', onUnload)
-        
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    useUnload(onUnload)
 
     return (
         <div className={`absolute inset-0`} >

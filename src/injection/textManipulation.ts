@@ -1,5 +1,6 @@
 import DevConsole from "@/development/DevConsole"
 import { lexicalStateToHtml, lexicalStateToText } from "./lexicalConversions"
+import DOMPurify from "dompurify"
 
 function replicateKeyPresses(element: HTMLElement, text: string, deleteCount?: number) {
     const keyPress = (key: string, charCode?: number) => ["keydown", "keyup"].forEach((eventType) => {
@@ -46,15 +47,17 @@ function insertTextAtContentDiv(element: HTMLDivElement, text: string, deleteCou
     // Range.createContextualFragment() would be useful here but is
     // non-standard and not supported in all browsers (IE9, for one)
     var el = document.createElement("div");
-    el.innerHTML = text;
+    const cleanText = DOMPurify.sanitize(text, {FORBID_ATTR: [ 'style', 'class' ]})
+    el.innerHTML = cleanText;
     var frag = document.createDocumentFragment(), node, lastNode;
     while ( (node = el.firstChild) ) {
         lastNode = frag.appendChild(node);
     }
     DevConsole.log("Document fragment: ", frag)
     DevConsole.log("Injection element: ", el)
+    DevConsole.log("String to Inject: ", cleanText)
     range.insertNode(frag);
-    replicateKeyPresses(element, text, deleteCount)
+    replicateKeyPresses(element, cleanText, deleteCount)
 
     if (!lastNode) return
     
@@ -78,7 +81,7 @@ function insertTextInInput(element: HTMLInputElement|HTMLTextAreaElement, text: 
 
     element.value =
       element.value.substring(0, startPos-(deleteCount??0)) +
-      text +
+      DOMPurify.sanitize(text) +
       element.value.substring(endPos, element.value.length);
     element.selectionStart = element.selectionEnd = startPos + text.length;
 
