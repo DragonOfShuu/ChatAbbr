@@ -84,8 +84,7 @@ const SideBarContent = (props: {className?: string}) => {
             hotkeyDispatchContext({ type: 'setHotkeys', hotkeys: value })
             setLoaded(true);
         })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [hotkeyDispatchContext])
 
     const switchCurrentEdit = (id: string) => {
         let newData: AbbrType|undefined = hotkeyContext.hasEdits[id]

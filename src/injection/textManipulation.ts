@@ -36,6 +36,9 @@ function insertTextAtContentDiv(element: HTMLDivElement, text: string, deleteCou
 
     if (sel.rangeCount===0) {
         replicateKeyPresses(element, text, deleteCount);
+        console.log("Replicated keys instead...")
+        const cleanText = DOMPurify.sanitize(text, {FORBID_ATTR: [ 'style', 'class' ]})
+        element.ownerDocument.execCommand("insertHTML", false, cleanText)
         return;
     } 
 
@@ -49,24 +52,25 @@ function insertTextAtContentDiv(element: HTMLDivElement, text: string, deleteCou
     var el = document.createElement("div");
     const cleanText = DOMPurify.sanitize(text, {FORBID_ATTR: [ 'style', 'class' ]})
     el.innerHTML = cleanText;
-    var frag = document.createDocumentFragment(), node, lastNode;
-    while ( (node = el.firstChild) ) {
-        lastNode = frag.appendChild(node);
-    }
-    DevConsole.log("Document fragment: ", frag)
-    DevConsole.log("Injection element: ", el)
-    DevConsole.log("String to Inject: ", cleanText)
-    range.insertNode(frag);
-    replicateKeyPresses(element, cleanText, deleteCount)
+    document.execCommand("insertHTML", false, cleanText)
+    // var frag = document.createDocumentFragment(), node, lastNode;
+    // while ( (node = el.firstChild) ) {
+    //     lastNode = frag.appendChild(node);
+    // }
+    // DevConsole.log("Document fragment: ", frag)
+    // DevConsole.log("Injection element: ", el)
+    // DevConsole.log("String to Inject: ", cleanText)
+    // range.insertNode(frag);
+    // replicateKeyPresses(element, cleanText, deleteCount)
 
-    if (!lastNode) return
+    // if (!lastNode) return
     
-    // Preserve the selection
-    range = range.cloneRange();
-    range.setStartAfter(lastNode);
-    range.collapse(true);
-    sel.removeAllRanges();
-    sel.addRange(range);
+    // // Preserve the selection
+    // range = range.cloneRange();
+    // range.setStartAfter(lastNode);
+    // range.collapse(true);
+    // sel.removeAllRanges();
+    // sel.addRange(range);
 }
 
 function insertTextInInput(element: HTMLInputElement|HTMLTextAreaElement, text: string, deleteCount?: number) {
