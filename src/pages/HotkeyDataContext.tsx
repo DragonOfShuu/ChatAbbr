@@ -80,9 +80,8 @@ function hotkeyApi(newState: hotkeyData, action: HotkeyAction): hotkeyData|false
             const id = generateUUID()
             let newHotkey: AbbrType = {
                 id: id,
-                hotkeys: ["-hw"],
+                hotkeys: ["-nt"],
                 name: "New Template",
-                // output: "Hello World! (Thankfully not homework)",
                 output: '',
                 options: {}
             }
