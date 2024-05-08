@@ -1,7 +1,7 @@
 Overview
 ========
 
-The injection will be separated into multiple parts (ofc). First there will be the portion which will use react which will allow the user to insert text into the placeholders. This will be called the "QuickTemplateEditor". The string html will then be passed to the "InjectionStrategyChooser" (I couldn't think of a better name). The output will be JSON detailing how we want to inject the data into the text box. The strategy, along with the html data and text box info will be passed to the "InjectionActionizer," which will perform each task given by the strategy. 
+The injection will be separated into multiple parts (ofc). First there will be the portion which will use react which will allow the user to insert text into the placeholders. This will be called the "QuickTemplateEditor". The string html will then be passed to the "StrategySearch" (I couldn't think of a better name). The output will be JSON detailing how we want to inject the data into the text box. The strategy, along with the html data and text box info will be passed to the "TextInjector," which will perform each task given by the strategy. 
 
 
 Quick Template Editor 
@@ -16,4 +16,7 @@ The custom component for each placeholder will be known as a "PlaceholderFiller,
 When the user accepts the placeholder replacements, the placeholders will be replaced with their corresponding output using the context. Then the lexical state will be converted into html, and will be used as the output.
 
 > If there are no placeholders, the placeholder process will be skipped, and the html will be immediately converted.
+
+Strategy Search
+====
 
