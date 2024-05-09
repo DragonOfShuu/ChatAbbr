@@ -1,6 +1,6 @@
 export type InjectionEventDataFormatType = {
     dataTransfer?: [FillFormat, FillFormat]
-    clipboardData?: FillFormat[] // I've seen it once and twice
+    clipboardData?: FillFormat[] 
 }
 
 export type InjectionEventInitType = 
@@ -51,7 +51,7 @@ export type InjectionDispatchEventType = {
 
 export type FillFormat = {
     type: 'text/html'|'text/plain'
-    // Clearly DOMPurify
+    // DOMPurify
     options?: {
         allowedAttr: string[],
         allowedTags: string[]
@@ -72,7 +72,6 @@ export type InjectionAction =
     }
     | {
         injType: "insertFragAtRange",
-        // fillFormat: { type: 'text/html' }
         fillFormat: FillFormat
     }
     | {
@@ -107,8 +106,7 @@ export type InjectionInfo = {
         abbrIndex: number,
     },
     text: string,
-    // triggerClear: boolean,
-    triggerClear: true,
+    trigClear: true,
     windowSelection: Selection|null,
 }
 
