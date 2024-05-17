@@ -1,4 +1,4 @@
-import { getAbbrList } from "../database/abbrAPI";
+import { getAbbrList } from "../../database/abbrAPI";
 
 export const findAbbr = async (currentText: string) => {
     const abbrList = await getAbbrList();

@@ -1,7 +1,7 @@
-import { AbbrType } from '../database/abbrAPI';
+import { AbbrType } from '../../database/abbrAPI';
 import findAbbr from './checkForAbbr';
 // import styles from './funnyStyles.module.sass'
-import { charAllowed, maxHotkeySize } from '../globalCharacterRules';
+import { charAllowed, maxHotkeySize } from '../../globalCharacterRules';
 import insertLexicalState from './textManipulation';
 import DevConsole from '@/development/DevConsole';
 // import { lexicalStateToText } from './lexicalConversions';

@@ -17,7 +17,7 @@ module.exports = {
     entry: {
         popup: "./src/popup/index.tsx",
         pages: "./src/pages/index.tsx",
-        content: "./src/injection/index.ts"
+        content: "./src/injection/index.tsx"
     },
     mode: env.DEVELOPMENT??true ? "development" : "production",
     // Required because chrome extensions can't use "eval"
